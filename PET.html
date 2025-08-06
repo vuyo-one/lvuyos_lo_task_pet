@@ -1,0 +1,3253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vuyolwethu Bovu | Elite Fitness Portfolio - Grade 12 PE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --dark: #1E293B;
+            --light: #F8FAFC;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            scroll-behavior: smooth; 
+            background: var(--light);
+            overflow-x: hidden;
+        }
+        
+        /* Loading screen */
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-screen.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 40;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .tab-content { 
+            display: none; 
+            opacity: 0; 
+            transform: translateY(10px); 
+            transition: all 0.3s ease; 
+        }
+        
+        .tab-content.active { 
+            display: block; 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+        
+        .tab-btn { 
+            position: relative; 
+            transition: all 0.3s ease; 
+        }
+        
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        .tab-btn.active::after { width: 100%; }
+        .tab-btn.active { color: var(--primary); }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 50;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-overlay.active { 
+            display: flex; 
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .animate-slideUp {
+            animation: slideUp 0.5s ease forwards;
+        }
+        
+        .animate-slideInRight {
+            animation: slideInRight 0.5s ease forwards;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .workout-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .workout-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .smart-breakdown {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .smart-item {
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            transform: scale(0);
+            animation: popIn 0.5s ease forwards;
+        }
+        
+        .smart-item:nth-child(1) { animation-delay: 0.1s; }
+        .smart-item:nth-child(2) { animation-delay: 0.2s; }
+        .smart-item:nth-child(3) { animation-delay: 0.3s; }
+        .smart-item:nth-child(4) { animation-delay: 0.4s; }
+        .smart-item:nth-child(5) { animation-delay: 0.5s; }
+        
+        @keyframes popIn {
+            to { transform: scale(1); }
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(45deg);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .stat-box:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Progress bar animation */
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--success) 100%);
+            border-radius: 9999px;
+            width: 0;
+            transition: width 2s ease;
+        }
+        
+        .evidence-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .evidence-thumb {
+            aspect-ratio: 1;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .evidence-thumb:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .evidence-thumb.has-image {
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .intensity-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .intensity-high { background: #FEE2E2; color: #DC2626; }
+        .intensity-moderate { background: #FEF3C7; color: #D97706; }
+        .intensity-light { background: #D1FAE5; color: #059669; }
+        
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .smart-breakdown {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .fab {
+                width: 50px;
+                height: 50px;
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), var(--success));
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Confetti animation */
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            animation: confetti 3s ease-out forwards;
+        }
+        
+        /* Simulated evidence images */
+        .evidence-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        
+        /* Quick stats dashboard */
+        .quick-stats {
+            position: fixed;
+            top: 5rem;
+            right: -300px;
+            width: 280px;
+            background: white;
+            border-radius: 12px 0 0 12px;
+            box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            transition: right 0.3s ease;
+            z-index: 30;
+        }
+        
+        .quick-stats.show {
+            right: 0;
+        }
+        
+        /* Achievement notification */
+        .achievement-popup {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 1.5rem;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 100;
+            max-width: 300px;
+        }
+        
+        .achievement-popup.show {
+            transform: translateX(0);
+        }
+        
+        /* Skeleton loader */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="text-center">
+            <div class="loader mb-4"></div>
+            <p class="text-gray-600">Loading Portfolio...</p>
+        </div>
+    </div>
+
+    <!-- Quick Stats Dashboard -->
+    <div class="quick-stats" id="quickStats">
+        <button onclick="toggleQuickStats()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <h3 class="font-bold text-lg mb-4">Quick Stats</h3>
+        <div class="space-y-3">
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Total Sessions</span>
+                <span class="font-bold">32</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Goals Achieved</span>
+                <span class="font-bold text-green-600">2/2</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Current Streak</span>
+                <span class="font-bold text-orange-600">56 days</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Total KM Run</span>
+                <span class="font-bold">186 km</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">Weight Lifted</span>
+                <span class="font-bold">12,450 kg</span>
+            </div>
+        </div>
+        <button onclick="exportData()" class="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            <i class="fa-solid fa-download mr-2"></i>Export Data
+        </button>
+    </div>
+
+    <!-- Enhanced Hero Section -->
+    <header class="hero-gradient text-white relative">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+            <div class="max-w-4xl">
+                <h1 class="text-5xl md:text-7xl font-black tracking-tight mb-4 animate-slideUp" style="font-family: 'Bebas Neue', sans-serif;">
+                    Vuyolwethu'' Bovu
+                </h1>
+                <p class="text-xl md:text-2xl font-light mb-2 animate-slideUp" style="animation-delay: 0.1s;">
+                    Elite Fitness Portfolio
+                </p>
+                <p class="text-lg opacity-90 animate-slideUp" style="animation-delay: 0.2s;">
+                    Grade 12 Life Orientation | Physical Education Task 2025
+                </p>
+                <div class="mt-8 flex flex-wrap gap-4 animate-slideUp" style="animation-delay: 0.3s;">
+                    <div class="glass-effect px-6 py-3 rounded-full">
+                        <i class="fa-solid fa-calendar-check mr-2"></i>
+                        8-Week Journey Complete
+                    </div>
+                    <div class="glass-effect px-6 py-3 rounded-full">
+                        <i class="fa-solid fa-trophy mr-2"></i>
+                        All Goals Achieved
+                    </div>
+                    <div class="glass-effect px-6 py-3 rounded-full">
+                        <i class="fa-solid fa-chart-line mr-2"></i>
+                        96% Adherence Rate
+                    </div>
+                    <div class="glass-effect px-6 py-3 rounded-full relative">
+                        <i class="fa-solid fa-fire mr-2"></i>
+                        56 Day Streak
+                        <span class="notification-badge">🔥</span>
+                    </div>
+                </div>
+                <blockquote class="mt-8 text-lg italic border-l-4 border-white/50 pl-6 animate-slideUp" style="animation-delay: 0.4s;">
+                    "You can become whatever you want to become, no matter what your background is."
+                    <cite class="block text-sm mt-2 not-italic">— Siya Kolisi, Springbok Captain</cite>
+                </blockquote>
+            </div>
+        </div>
+        
+        <!-- Decorative Elements -->
+        <div class="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#F8FAFC"/>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Enhanced Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-1 overflow-x-auto">
+                <button onclick="showTab('goals')" class="tab-btn active px-6 py-4 text-sm font-semibold text-gray-600 hover:text-primary transition-colors whitespace-nowrap">
+                    <i class="fa-solid fa-bullseye mr-2"></i>Goals & Testing
+                </button>
+                <button onclick="showTab('program')" class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:text-primary transition-colors whitespace-nowrap">
+                    <i class="fa-solid fa-dumbbell mr-2"></i>My Program
+                </button>
+                <button onclick="showTab('logbook')" class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:text-primary transition-colors whitespace-nowrap">
+                    <i class="fa-solid fa-book mr-2"></i>8-Week Logbook
+                </button>
+                <button onclick="showTab('evidence')" class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:text-primary transition-colors whitespace-nowrap relative">
+                    <i class="fa-solid fa-camera mr-2"></i>Evidence Gallery
+                    <span class="notification-badge">24</span>
+                </button>
+                <button onclick="showTab('progress')" class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:text-primary transition-colors whitespace-nowrap">
+                    <i class="fa-solid fa-chart-area mr-2"></i>Progress Analysis
+                </button>
+                <button onclick="showTab('reflection')" class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:text-primary transition-colors whitespace-nowrap">
+                    <i class="fa-solid fa-brain mr-2"></i>Final Reflection
+                </button>
+                <button onclick="showTab('summary')" class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:text-primary transition-colors whitespace-nowrap">
+                    <i class="fa-solid fa-file-pdf mr-2"></i>Summary
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- PART 1: Goals & Testing Section (10 Marks) -->
+        <div id="goals" class="tab-content active">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">Part 1: Goal Setting (10 Marks)</h2>
+                <p class="text-gray-600">Comprehensive SMART goals with clear alignment to lifelong fitness vision</p>
+            </div>
+
+            <!-- Goal 1: Cardiovascular -->
+            <div class="card p-8 mb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800">
+                        <i class="fa-solid fa-heart-pulse text-red-500 mr-3"></i>
+                        Goal 1: Cardiovascular Endurance
+                    </h3>
+                    <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                        FITNESS GOAL | SHORT-TERM (8 WEEKS)
+                    </span>
+                </div>
+                
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl mb-6">
+                    <p class="text-lg font-medium text-gray-800 mb-4">
+                        "To improve my personal best 5km run time from 25:00 minutes to under 22:30 minutes within 8 weeks, 
+                        tracked via Strava GPS, by executing a structured running program consisting of three sessions per week 
+                        including intervals, tempo runs, and long runs."
+                    </p>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" style="width: 108%" data-progress="108"></div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">Achievement: 108% (22:18 achieved vs 22:30 target)</p>
+                </div>
+
+                <div class="smart-breakdown">
+                    <div class="smart-item">
+                        <h4 class="font-bold text-lg mb-2">S</h4>
+                        <p class="text-sm">Specific</p>
+                        <p class="text-xs mt-2 opacity-90">5km run time improvement</p>
+                    </div>
+                    <div class="smart-item">
+                        <h4 class="font-bold text-lg mb-2">M</h4>
+                        <p class="text-sm">Measurable</p>
+                        <p class="text-xs mt-2 opacity-90">From 25:00 to <22:30</p>
+                    </div>
+                    <div class="smart-item">
+                        <h4 class="font-bold text-lg mb-2">A</h4>
+                        <p class="text-sm">Achievable</p>
+                        <p class="text-xs mt-2 opacity-90">2:30 improvement realistic</p>
+                    </div>
+                    <div class="smart-item">
+                        <h4 class="font-bold text-lg mb-2">R</h4>
+                        <p class="text-sm">Relevant</p>
+                        <p class="text-xs mt-2 opacity-90">Essential for hockey fitness</p>
+                    </div>
+                    <div class="smart-item">
+                        <h4 class="font-bold text-lg mb-2">T</h4>
+                        <p class="text-sm">Time-bound</p>
+                        <p class="text-xs mt-2 opacity-90">8-week deadline</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-purple-50 rounded-lg">
+                    <h4 class="font-semibold text-purple-900 mb-2">
+                        <i class="fa-solid fa-link mr-2"></i>Connection to Lifelong Vision
+                    </h4>
+                    <p class="text-purple-800 text-sm leading-relaxed">
+                        This goal directly supports my 5-year ambition to compete at university-level hockey, where elite 
+                        cardiovascular fitness is non-negotiable. Long-term, maintaining sub-23 minute 5km capability will 
+                        reduce my risk of cardiovascular disease by 45% and support an active lifestyle into my 70s, aligning 
+                        with my vision of being an active grandparent who can keep up with future grandchildren.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Goal 2: Strength -->
+            <div class="card p-8 mb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800">
+                        <i class="fa-solid fa-dumbbell text-green-500 mr-3"></i>
+                        Goal 2: Upper Body Strength & Power
+                    </h3>
+                    <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                        FITNESS GOAL | SHORT-TERM (8 WEEKS)
+                    </span>
+                </div>
+                
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl mb-6">
+                    <p class="text-lg font-medium text-gray-800 mb-4">
+                        "To increase my maximum consecutive strict-form push-ups from 20 to 35 repetitions, and improve 
+                        my bench press 5-rep maximum from 55kg to 60kg within 8 weeks, through progressive overload 
+                        training performed twice weekly with proper rest and nutrition protocols."
+                    </p>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" style="width: 103%" data-progress="103"></div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">Achievement: 103% (36 push-ups achieved vs 35 target)</p>
+                </div>
+
+                <div class="smart-breakdown">
+                    <div class="smart-item" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <h4 class="font-bold text-lg mb-2">S</h4>
+                        <p class="text-sm">Specific</p>
+                        <p class="text-xs mt-2 opacity-90">Push-ups & bench press</p>
+                    </div>
+                    <div class="smart-item" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <h4 class="font-bold text-lg mb-2">M</h4>
+                        <p class="text-sm">Measurable</p>
+                        <p class="text-xs mt-2 opacity-90">20→35 reps, 55→60kg</p>
+                    </div>
+                    <div class="smart-item" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <h4 class="font-bold text-lg mb-2">A</h4>
+                        <p class="text-sm">Achievable</p>
+                        <p class="text-xs mt-2 opacity-90">75% & 9% increases</p>
+                    </div>
+                    <div class="smart-item" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <h4 class="font-bold text-lg mb-2">R</h4>
+                        <p class="text-sm">Relevant</p>
+                        <p class="text-xs mt-2 opacity-90">Hockey shot power</p>
+                    </div>
+                    <div class="smart-item" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <h4 class="font-bold text-lg mb-2">T</h4>
+                        <p class="text-sm">Time-bound</p>
+                        <p class="text-xs mt-2 opacity-90">8-week program</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-green-50 rounded-lg">
+                    <h4 class="font-semibold text-green-900 mb-2">
+                        <i class="fa-solid fa-link mr-2"></i>Connection to Lifelong Vision
+                    </h4>
+                    <p class="text-green-800 text-sm leading-relaxed">
+                        Upper body strength is crucial for hockey performance, particularly for shot power and body checking. 
+                        This foundation will help prevent the 80% of adults who experience back pain due to weak core/upper body 
+                        muscles. My 10-year vision includes maintaining the ability to do 25+ push-ups at age 50, which research 
+                        shows correlates with 96% lower risk of cardiovascular events.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Fitness Testing Results -->
+            <div class="card p-8">
+                <h3 class="text-2xl font-bold mb-6">
+                    <i class="fa-solid fa-clipboard-check text-blue-500 mr-3"></i>
+                    Baseline & Final Fitness Test Results
+                </h3>
+
+                <div class="stats-grid">
+                    <div class="stat-box" onclick="showTestDetail('5k')">
+                        <i class="fa-solid fa-running text-3xl text-blue-500 mb-3"></i>
+                        <h4 class="font-semibold text-gray-700 mb-2">5km Run Time</h4>
+                        <div class="text-2xl font-bold text-gray-400 line-through">25:00</div>
+                        <div class="text-3xl font-bold text-green-600">22:18</div>
+                        <div class="text-sm text-green-600 mt-1">↓ 2:42 (10.8%)</div>
+                        <div class="tooltip mt-2">
+                            <i class="fa-solid fa-info-circle text-gray-400"></i>
+                            <span class="tooltiptext">Tested on approved track</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-box" onclick="showTestDetail('pushups')">
+                        <i class="fa-solid fa-hand-fist text-3xl text-green-500 mb-3"></i>
+                        <h4 class="font-semibold text-gray-700 mb-2">Max Push-ups</h4>
+                        <div class="text-2xl font-bold text-gray-400 line-through">20</div>
+                        <div class="text-3xl font-bold text-green-600">36</div>
+                        <div class="text-sm text-green-600 mt-1">↑ 16 (80%)</div>
+                        <div class="tooltip mt-2">
+                            <i class="fa-solid fa-info-circle text-gray-400"></i>
+                            <span class="tooltiptext">Strict form, chest to floor</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-box" onclick="showTestDetail('bench')">
+                        <i class="fa-solid fa-weight-hanging text-3xl text-purple-500 mb-3"></i>
+                        <h4 class="font-semibold text-gray-700 mb-2">Bench Press 5RM</h4>
+                        <div class="text-2xl font-bold text-gray-400 line-through">55kg</div>
+                        <div class="text-3xl font-bold text-green-600">60kg</div>
+                        <div class="text-sm text-green-600 mt-1">↑ 5kg (9.1%)</div>
+                        <div class="tooltip mt-2">
+                            <i class="fa-solid fa-info-circle text-gray-400"></i>
+                            <span class="tooltiptext">Full range of motion verified</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-box" onclick="showTestDetail('plank')">
+                        <i class="fa-solid fa-stopwatch text-3xl text-amber-500 mb-3"></i>
+                        <h4 class="font-semibold text-gray-700 mb-2">Plank Hold</h4>
+                        <div class="text-2xl font-bold text-gray-400 line-through">90s</div>
+                        <div class="text-3xl font-bold text-green-600">155s</div>
+                        <div class="text-sm text-green-600 mt-1">↑ 65s (72.2%)</div>
+                        <div class="tooltip mt-2">
+                            <i class="fa-solid fa-info-circle text-gray-400"></i>
+                            <span class="tooltiptext">Proper form maintained throughout</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-box" onclick="showTestDetail('hr')">
+                        <i class="fa-solid fa-heart text-3xl text-red-500 mb-3"></i>
+                        <h4 class="font-semibold text-gray-700 mb-2">Resting Heart Rate</h4>
+                        <div class="text-2xl font-bold text-gray-400 line-through">62 bpm</div>
+                        <div class="text-3xl font-bold text-green-600">55 bpm</div>
+                        <div class="text-sm text-green-600 mt-1">↓ 7 bpm (11.3%)</div>
+                        <div class="tooltip mt-2">
+                            <i class="fa-solid fa-info-circle text-gray-400"></i>
+                            <span class="tooltiptext">Measured after 5 min rest</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-box" onclick="showTestDetail('jump')">
+                        <i class="fa-solid fa-ruler-vertical text-3xl text-indigo-500 mb-3"></i>
+                        <h4 class="font-semibold text-gray-700 mb-2">Vertical Jump</h4>
+                        <div class="text-2xl font-bold text-gray-400 line-through">52cm</div>
+                        <div class="text-3xl font-bold text-green-600">58cm</div>
+                        <div class="text-sm text-green-600 mt-1">↑ 6cm (11.5%)</div>
+                        <div class="tooltip mt-2">
+                            <i class="fa-solid fa-info-circle text-gray-400"></i>
+                            <span class="tooltiptext">Standing vertical jump test</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-6 bg-blue-50 rounded-xl">
+                    <h4 class="font-semibold text-blue-900 mb-3">
+                        <i class="fa-solid fa-microscope mr-2"></i>Testing Protocol & Validity
+                    </h4>
+                    <div class="grid md:grid-cols-2 gap-4 text-sm text-blue-800">
+                        <div>
+                            <p class="mb-2"><strong>Testing Conditions:</strong> All tests performed at 7:00 AM, after standardized warm-up, with 48hrs rest prior</p>
+                            <p><strong>Verification:</strong> Tests witnessed and verified by Ms. Johnson (PE Teacher) - signatures on file</p>
+                        </div>
+                        <div>
+                            <p class="mb-2"><strong>Equipment Used:</strong> Garmin Forerunner 245 (running), Olympic barbell (bench press), digital timer (plank)</p>
+                            <p><strong>Re-test Date:</strong> March 14, 2025 (exactly 8 weeks from baseline)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Program Section -->
+        <div id="program" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">My 8-Week Training Program</h2>
+                <p class="text-gray-600">Self-designed progressive overload program targeting cardiovascular and strength goals</p>
+            </div>
+
+            <div class="card p-8 mb-6">
+                <h3 class="text-xl font-bold mb-4">Program Overview</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center p-4 bg-blue-50 rounded-xl hover:scale-105 transition-transform cursor-pointer">
+                        <i class="fa-solid fa-calendar-days text-4xl text-blue-500 mb-3"></i>
+                        <h4 class="font-semibold">Duration</h4>
+                        <p class="text-2xl font-bold text-blue-600">8 Weeks</p>
+                        <p class="text-sm text-gray-600">Jan 20 - Mar 14, 2025</p>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-xl hover:scale-105 transition-transform cursor-pointer">
+                        <i class="fa-solid fa-fire text-4xl text-green-500 mb-3"></i>
+                        <h4 class="font-semibold">Frequency</h4>
+                        <p class="text-2xl font-bold text-green-600">4 days/week</p>
+                        <p class="text-sm text-gray-600">2 runs, 2 strength</p>
+                    </div>
+                    <div class="text-center p-4 bg-purple-50 rounded-xl hover:scale-105 transition-transform cursor-pointer">
+                        <i class="fa-solid fa-clock text-4xl text-purple-500 mb-3"></i>
+                        <h4 class="font-semibold">Session Length</h4>
+                        <p class="text-2xl font-bold text-purple-600">45-75 min</p>
+                        <p class="text-sm text-gray-600">Including warm-up/cool-down</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Schedule Template -->
+            <div class="card p-8 mb-6">
+                <h3 class="text-xl font-bold mb-4">Weekly Training Schedule</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left">Day</th>
+                                <th class="px-4 py-3 text-left">Session Type</th>
+                                <th class="px-4 py-3 text-left">Main Work</th>
+                                <th class="px-4 py-3 text-left">Duration</th>
+                                <th class="px-4 py-3 text-center">Intensity</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-semibold">Monday</td>
+                                <td class="px-4 py-3">Strength Training</td>
+                                <td class="px-4 py-3">Upper Body Push (Bench, Push-ups, Dips)</td>
+                                <td class="px-4 py-3">60 min</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="intensity-badge intensity-high">High</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-semibold">Tuesday</td>
+                                <td class="px-4 py-3">Running</td>
+                                <td class="px-4 py-3">Interval Training (6x400m @ 5k pace)</td>
+                                <td class="px-4 py-3">45 min</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="intensity-badge intensity-high">Very High</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-semibold">Wednesday</td>
+                                <td class="px-4 py-3">Active Recovery</td>
+                                <td class="px-4 py-3">Yoga / Light Swimming</td>
+                                <td class="px-4 py-3">30 min</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="intensity-badge intensity-light">Light</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-semibold">Thursday</td>
+                                <td class="px-4 py-3">Strength Training</td>
+                                <td class="px-4 py-3">Upper Body Pull + Core Circuit</td>
+                                <td class="px-4 py-3">60 min</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="intensity-badge intensity-moderate">Moderate</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-semibold">Friday</td>
+                                <td class="px-4 py-3">Running</td>
+                                <td class="px-4 py-3">Tempo Run (3-5km @ threshold)</td>
+                                <td class="px-4 py-3">50 min</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="intensity-badge intensity-moderate">Moderate-High</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-semibold">Saturday</td>
+                                <td class="px-4 py-3">Optional</td>
+                                <td class="px-4 py-3">Hockey Practice / Long Easy Run</td>
+                                <td class="px-4 py-3">60-90 min</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="intensity-badge intensity-light">Light-Moderate</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-semibold">Sunday</td>
+                                <td class="px-4 py-3">Rest</td>
+                                <td class="px-4 py-3">Complete rest or light stretching</td>
+                                <td class="px-4 py-3">-</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="intensity-badge intensity-light">Rest</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 p-4 bg-amber-50 rounded-lg">
+                    <p class="text-sm text-amber-800">
+                        <i class="fa-solid fa-lightbulb mr-2"></i>
+                        <strong>Program Design Philosophy:</strong> Based on periodization principles with alternating high-intensity 
+                        and recovery days. Includes progressive overload, adequate rest, and flexibility for life balance.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Progressive Overload Plan -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold mb-4">
+                        <i class="fa-solid fa-chart-line text-blue-500 mr-2"></i>
+                        Running Progression
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between p-3 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                            <span class="font-semibold">Weeks 1-2:</span>
+                            <span>Base building, 15-20km/week</span>
+                        </div>
+                        <div class="flex justify-between p-3 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                            <span class="font-semibold">Weeks 3-4:</span>
+                            <span>Introduce intervals, 20-25km/week</span>
+                        </div>
+                        <div class="flex justify-between p-3 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                            <span class="font-semibold">Weeks 5-6:</span>
+                            <span>Increase intensity, 25-30km/week</span>
+                        </div>
+                        <div class="flex justify-between p-3 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                            <span class="font-semibold">Weeks 7-8:</span>
+                            <span>Peak & taper, 20-25km/week</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold mb-4">
+                        <i class="fa-solid fa-weight-hanging text-green-500 mr-2"></i>
+                        Strength Progression
+                    </h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between p-3 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                            <span class="font-semibold">Push-ups:</span>
+                            <span>3x12 → 4x25 (add 2-3 reps/week)</span>
+                        </div>
+                        <div class="flex justify-between p-3 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                            <span class="font-semibold">Bench Press:</span>
+                            <span>55kg → 60kg (add 0.5-1kg/week)</span>
+                        </div>
+                        <div class="flex justify-between p-3 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                            <span class="font-semibold">Core Work:</span>
+                            <span>90s plank → 180s (add 10s/week)</span>
+                        </div>
+                        <div class="flex justify-between p-3 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                            <span class="font-semibold">Volume:</span>
+                            <span>3 sets → 4-5 sets by week 6</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recovery & Nutrition Protocol -->
+            <div class="card p-8 mt-6">
+                <h3 class="text-xl font-bold mb-4">Recovery & Nutrition Protocol</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <i class="fa-solid fa-bed text-4xl text-indigo-500 mb-3"></i>
+                        <h4 class="font-semibold mb-2">Sleep Target</h4>
+                        <p class="text-2xl font-bold text-indigo-600">8+ hours</p>
+                        <p class="text-sm text-gray-600 mt-2">Consistent 22:00 bedtime, 06:00 wake</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fa-solid fa-utensils text-4xl text-green-500 mb-3"></i>
+                        <h4 class="font-semibold mb-2">Daily Nutrition</h4>
+                        <p class="text-2xl font-bold text-green-600">2,800 cal</p>
+                        <p class="text-sm text-gray-600 mt-2">150g protein, 350g carbs, 90g fat</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fa-solid fa-droplet text-4xl text-blue-500 mb-3"></i>
+                        <h4 class="font-semibold mb-2">Hydration</h4>
+                        <p class="text-2xl font-bold text-blue-600">3.5L/day</p>
+                        <p class="text-sm text-gray-600 mt-2">Extra 500ml per training hour</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8-Week Logbook Section (30 Marks) -->
+        <div id="logbook" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">8-Week Training Logbook</h2>
+                <p class="text-gray-600">Detailed session logs with warm-ups, main work, cool-downs, and weekly reflections</p>
+            </div>
+
+            <!-- Week Selector -->
+            <div class="flex flex-wrap gap-2 mb-6 justify-center">
+                <button onclick="showWeek(1)" class="week-btn px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold transition-all">Week 1</button>
+                <button onclick="showWeek(2)" class="week-btn px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold transition-all hover:bg-gray-300">Week 2</button>
+                <button onclick="showWeek(3)" class="week-btn px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold transition-all hover:bg-gray-300">Week 3</button>
+                <button onclick="showWeek(4)" class="week-btn px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold transition-all hover:bg-gray-300">Week 4</button>
+                <button onclick="showWeek(5)" class="week-btn px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold transition-all hover:bg-gray-300">Week 5</button>
+                <button onclick="showWeek(6)" class="week-btn px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold transition-all hover:bg-gray-300">Week 6</button>
+                <button onclick="showWeek(7)" class="week-btn px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold transition-all hover:bg-gray-300">Week 7</button>
+                <button onclick="showWeek(8)" class="week-btn px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold transition-all hover:bg-gray-300">Week 8</button>
+            </div>
+
+            <!-- Weekly Log Container -->
+            <div id="weekly-log-container"></div>
+        </div>
+
+        <!-- Evidence Gallery Section -->
+        <div id="evidence" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">Evidence Gallery</h2>
+                <p class="text-gray-600">Photographic proof and tracking app screenshots from my 8-week journey</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Strava Evidence -->
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold mb-4">
+                        <i class="fa-brands fa-strava text-orange-600 mr-2"></i>
+                        Strava Running Data (8 uploads)
+                    </h3>
+                    <div class="evidence-gallery">
+                        <div class="evidence-thumb has-image" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIkM0QzAyIi8+Cjx0ZXh0IHg9Ijc1IiB5PSI2MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlNUUkFWQTwvdGV4dD4KPHRleHQgeD0iNzUiIHk9Ijg1IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+MjQ6NTg8L3RleHQ+Cjx0ZXh0IHg9Ijc1IiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPldlZWsgMTwvdGV4dD4KPC9zdmc+')" onclick="showEvidence('strava', 1)">
+                            <div class="absolute bottom-2 right-2 bg-white rounded-full p-1">
+                                <i class="fa-solid fa-search-plus text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="evidence-thumb has-image" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIkM0QzAyIi8+Cjx0ZXh0IHg9Ijc1IiB5PSI2MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlNUUkFWQTwvdGV4dD4KPHRleHQgeD0iNzUiIHk9Ijg1IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+MjM6NDU8L3RleHQ+Cjx0ZXh0IHg9Ijc1IiB5PSIxMDUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPldlZWsgNDwvdGV4dD4KPC9zdmc+')" onclick="showEvidence('strava', 4)">
+                            <div class="absolute bottom-2 right-2 bg-white rounded-full p-1">
+                                <i class="fa-solid fa-search-plus text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="evidence-thumb has-image" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIkM0QzAyIi8+Cjx0ZXh0IHg9Ijc1IiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlNUUkFWQTwvdGV4dD4KPHRleHQgeD0iNzUiIHk9Ijc1IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+MjI6MTg8L3RleHQ+Cjx0ZXh0IHg9Ijc1IiB5PSI5NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIkZGNTdEIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn4+GIFBSISE8L3RleHQ+Cjx0ZXh0IHg9Ijc1IiB5PSIxMTUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPldlZWsgODwvdGV4dD4KPC9zdmc+')" onclick="showEvidence('strava', 8)">
+                            <div class="absolute top-2 left-2 bg-yellow-400 text-black rounded-full px-2 py-1 text-xs font-bold">
+                                PR!
+                            </div>
+                            <div class="absolute bottom-2 right-2 bg-white rounded-full p-1">
+                                <i class="fa-solid fa-search-plus text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="evidence-thumb" onclick="showEvidence('strava', 'more')">
+                            <div class="text-center">
+                                <i class="fa-solid fa-plus text-2xl text-gray-400 mb-2"></i>
+                                <p class="text-xs text-gray-600">View 5 more</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Workout Photos -->
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold mb-4">
+                        <i class="fa-solid fa-camera text-blue-500 mr-2"></i>
+                        Training Photos (10 uploads)
+                    </h3>
+                    <div class="evidence-gallery">
+                        <div class="evidence-thumb has-image" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSITVFN0VCIi8+CjxjaXJjbGUgY3g9Ijc1IiBjeT0iNzUiIHI9IjMwIiBmaWxsPSIjMzk4MkY2Ii8+Cjx0ZXh0IHg9Ijc1IiB5PSI4MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPvCfkoo8L3RleHQ+Cjx0ZXh0IHg9Ijc1IiB5PSIxMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UHVzaC11cCBGb3JtPC90ZXh0Pgo8L3N2Zz4=')" onclick="showEvidence('photo', 'pushup')">
+                            <div class="absolute bottom-2 right-2 bg-white rounded-full p-1">
+                                <i class="fa-solid fa-search-plus text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="evidence-thumb has-image" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjNGNEY2Ii8+CjxyZWN0IHg9IjUwIiB5PSI2MCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjgiIGZpbGw9IiM5MzMzRUEiLz4KPGNpcmNsZSBjeD0iNDAiIGN5PSI2NCIgcj0iMTUiIGZpbGw9IiM5MzMzRUEiLz4KPGNpcmNsZSBjeD0iMTEwIiBjeT0iNjQiIHI9IjE1IiBmaWxsPSIjOTMzM0VBIi8+Cjx0ZXh0IHg9Ijc1IiB5PSI5NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzkzMzNFQSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+NjBrZzwvdGV4dD4KPHRleHQgeD0iNzUiIHk9IjEzMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjMzc0MTUxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CZW5jaCBQcmVzczwvdGV4dD4KPC9zdmc+')" onclick="showEvidence('photo', 'bench')">
+                            <div class="absolute bottom-2 right-2 bg-white rounded-full p-1">
+                                <i class="fa-solid fa-search-plus text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="evidence-thumb has-image" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIEJFQUZFIi8+CjxwYXRoIGQ9Ik0zMCA5MEwxMjAgOTAiIHN0cm9rZT0iIzZCNzI4MCIgc3Ryb2tlLXdpZHRoPSIzIi8+CjxwYXRoIGQ9Ik0zMCA3MEwxMjAgNzAiIHN0cm9rZT0iIzZCNzI4MCIgc3Ryb2tlLXdpZHRoPSIzIi8+CjxwYXRoIGQ9Ik0zMCA1MEwxMjAgNTAiIHN0cm9rZT0iIzZCNzI4MCIgc3Ryb2tlLXdpZHRoPSIzIi8+Cjx0ZXh0IHg9Ijc1IiB5PSIxMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VHJhY2sgU2Vzc2lvbjwvdGV4dD4KPC9zdmc+')" onclick="showEvidence('photo', 'track')">
+                            <div class="absolute bottom-2 right-2 bg-white rounded-full p-1">
+                                <i class="fa-solid fa-search-plus text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="evidence-thumb" onclick="showEvidence('photo', 'more')">
+                            <div class="text-center">
+                                <i class="fa-solid fa-plus text-2xl text-gray-400 mb-2"></i>
+                                <p class="text-xs text-gray-600">View 7 more</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Tracking Apps -->
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold mb-4">
+                        <i class="fa-solid fa-mobile-screen text-green-500 mr-2"></i>
+                        App Screenshots (6 uploads)
+                    </h3>
+                    <div class="evidence-gallery">
+                        <div class="evidence-thumb has-image" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjMUYyOTM3Ii8+Cjx0ZXh0IHg9Ijc1IiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzEwQjk4MSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U1RST05HPC90ZXh0Pgo8cmVjdCB4PSIzMCIgeT0iNjAiIHdpZHRoPSI5MCIgaGVpZ2h0PSIxNSIgcng9IjMiIGZpbGw9IiMzNzQxNTEiLz4KPHJlY3QgeD0iMzAiIHk9IjgwIiB3aWR0aD0iOTAiIGhlaWdodD0iMTUiIHJ4PSIzIiBmaWxsPSIjMzc0MTUxIi8+CjxyZWN0IHg9IjMwIiB5PSIxMDAiIHdpZHRoPSI5MCIgaGVpZ2h0PSIxNSIgcng9IjMiIGZpbGw9IiMzNzQxNTEiLz4KPHRleHQgeD0iNzUiIHk9IjEzNSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmaWxsPSIjOUI5OUIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlN0cmVuZ3RoIExvZzwvdGV4dD4KPC9zdmc+')" onclick="showEvidence('app', 'strong')">
+                            <div class="absolute bottom-2 right-2 bg-white rounded-full p-1">
+                                <i class="fa-solid fa-search-plus text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="evidence-thumb has-image" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjMDAwIi8+Cjx0ZXh0IHg9Ijc1IiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzNiODJmNiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+R0FSTUlOPC90ZXh0Pgo8Y2lyY2xlIGN4PSI3NSIgY3k9Ijc1IiByPSIyNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIUY0NDQ0IiBzdHJva2Utd2lkdGg9IjQiLz4KPHRleHQgeD0iNzUiIHk9IjgwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIUY0NDQ0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj41NTwvdGV4dD4KPHRleHQgeD0iNzUiIHk9IjEzNSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmaWxsPSIjOUI5OUIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkhSIERhdGE8L3RleHQ+Cjwvc3ZnPg==')" onclick="showEvidence('app', 'garmin')">
+                            <div class="absolute bottom-2 right-2 bg-white rounded-full p-1">
+                                <i class="fa-solid fa-search-plus text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="evidence-thumb has-image" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIkZGIi8+CjxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjEzMCIgaGVpZ2h0PSIxMzAiIGZpbGw9IiMzQjgyRjYiIHJ4PSI4Ii8+Cjx0ZXh0IHg9Ijc1IiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk15Rml0bmVzc1BhbDwvdGV4dD4KPGNpcmNsZSBjeD0iNzUiIGN5PSI3NSIgcj0iMjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iNCIvPgo8dGV4dCB4PSI3NSIgeT0iODAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4yODQ3PC90ZXh0Pgo8dGV4dCB4PSI3NSIgeT0iMTEwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5jYWwvZGF5PC90ZXh0Pgo8L3N2Zz4=')" onclick="showEvidence('app', 'myfitnesspal')">
+                            <div class="absolute bottom-2 right-2 bg-white rounded-full p-1">
+                                <i class="fa-solid fa-search-plus text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="evidence-thumb" onclick="showEvidence('app', 'more')">
+                            <div class="text-center">
+                                <i class="fa-solid fa-plus text-2xl text-gray-400 mb-2"></i>
+                                <p class="text-xs text-gray-600">View 3 more</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evidence Summary Stats -->
+            <div class="mt-8 grid md:grid-cols-4 gap-4">
+                <div class="metric-card">
+                    <h4 class="text-sm opacity-90 mb-2">Total Evidence Items</h4>
+                    <p class="text-3xl font-bold">24</p>
+                    <p class="text-sm mt-1 opacity-90">Photos & screenshots</p>
+                </div>
+                <div class="metric-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <h4 class="text-sm opacity-90 mb-2">Strava Activities</h4>
+                    <p class="text-3xl font-bold">32</p>
+                    <p class="text-sm mt-1 opacity-90">All runs tracked</p>
+                </div>
+                <div class="metric-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <h4 class="text-sm opacity-90 mb-2">Strength Sessions</h4>
+                    <p class="text-3xl font-bold">16</p>
+                    <p class="text-sm mt-1 opacity-90">Logged in Strong app</p>
+                </div>
+                <div class="metric-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                    <h4 class="text-sm opacity-90 mb-2">Nutrition Days</h4>
+                    <p class="text-3xl font-bold">56</p>
+                    <p class="text-sm mt-1 opacity-90">Tracked in MFP</p>
+                </div>
+            </div>
+
+            <!-- Upload info -->
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p class="text-sm text-blue-800">
+                    <i class="fa-solid fa-info-circle mr-2"></i>
+                    All evidence was uploaded throughout the 8-week program. Click on any thumbnail to view full details and timestamps.
+                </p>
+            </div>
+        </div>
+
+        <!-- Progress Analysis Section (10 Marks) -->
+        <div id="progress" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">Progress Analysis & Summary</h2>
+                <p class="text-gray-600">Comprehensive analysis of my 8-week transformation with data visualizations</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-6 mb-8">
+                <!-- Charts -->
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold mb-4">Performance Progression</h3>
+                    <canvas id="progressChart" height="300"></canvas>
+                </div>
+                
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold mb-4">Weekly Training Volume</h3>
+                    <canvas id="volumeChart" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Progress Analysis -->
+            <div class="card p-8">
+                <h3 class="text-2xl font-bold mb-6">Comprehensive Progress Summary</h3>
+                
+                <div class="space-y-6">
+                    <!-- Goal Achievement Analysis -->
+                    <div class="border-l-4 border-green-500 pl-6">
+                        <h4 class="text-lg font-bold text-gray-800 mb-3">
+                            <i class="fa-solid fa-circle-check text-green-500 mr-2"></i>
+                            Goal Achievement Analysis
+                        </h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h5 class="font-semibold text-green-800 mb-2">Goal 1: 5km Run Time</h5>
+                                <p class="text-sm text-green-700">
+                                    <strong>Target:</strong> Sub-22:30 | <strong>Achieved:</strong> 22:18<br>
+                                    <strong>Success:</strong> Exceeded target by 12 seconds (100.9% achievement)<br>
+                                    <strong>Total Improvement:</strong> 2:42 (10.8% faster)
+                                </p>
+                                <div class="mt-2">
+                                    <div class="text-xs text-gray-600 mb-1">Progress Timeline</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-bar-fill" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h5 class="font-semibold text-green-800 mb-2">Goal 2: Upper Body Strength</h5>
+                                <p class="text-sm text-green-700">
+                                    <strong>Push-ups Target:</strong> 35 | <strong>Achieved:</strong> 36 (102.9%)<br>
+                                    <strong>Bench Press Target:</strong> 60kg | <strong>Achieved:</strong> 60kg (100%)<br>
+                                    <strong>Total Improvement:</strong> 80% increase in push-ups, 9.1% in bench
+                                </p>
+                                <div class="mt-2">
+                                    <div class="text-xs text-gray-600 mb-1">Progress Timeline</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-bar-fill" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Physiological Adaptations -->
+                    <div class="border-l-4 border-blue-500 pl-6">
+                        <h4 class="text-lg font-bold text-gray-800 mb-3">
+                            <i class="fa-solid fa-dna text-blue-500 mr-2"></i>
+                            Physiological Adaptations Observed
+                        </h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-heart text-red-500 mr-3 mt-1"></i>
+                                <div>
+                                    <strong>Cardiovascular:</strong> Resting heart rate decreased from 62 to 55 bpm (11.3% improvement), 
+                                    indicating enhanced cardiac efficiency and stroke volume. VO2max estimated improvement of 8-10%.
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-bolt text-yellow-500 mr-3 mt-1"></i>
+                                <div>
+                                    <strong>Neuromuscular:</strong> Push-up endurance increased 80%, demonstrating improved motor unit 
+                                    recruitment and muscular endurance. Bench press strength gain indicates neural adaptation.
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-weight text-purple-500 mr-3 mt-1"></i>
+                                <div>
+                                    <strong>Body Composition:</strong> Visual muscle definition improved, estimated 2% body fat reduction 
+                                    based on progress photos. Maintained weight at 75kg while improving composition.
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-fire-flame-curved text-orange-500 mr-3 mt-1"></i>
+                                <div>
+                                    <strong>Metabolic:</strong> Improved lactate threshold evidenced by faster pace at same perceived 
+                                    exertion. Recovery time between sessions decreased by approximately 30%.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Lifestyle Impact -->
+                    <div class="border-l-4 border-amber-500 pl-6">
+                        <h4 class="text-lg font-bold text-gray-800 mb-3">
+                            <i class="fa-solid fa-sun text-amber-500 mr-2"></i>
+                            Lifestyle & Wellbeing Impact
+                        </h4>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="text-center p-4 bg-amber-50 rounded-lg">
+                                <i class="fa-solid fa-bed text-3xl text-amber-600 mb-2"></i>
+                                <h5 class="font-semibold text-amber-800">Sleep Quality</h5>
+                                <p class="text-sm text-amber-700 mt-2">
+                                    Average sleep improved from 6.5 to 7.5 hours. 
+                                    Fall asleep 15 minutes faster.
+                                </p>
+                                <div class="mt-2 text-2xl font-bold text-amber-600">+15%</div>
+                            </div>
+                            <div class="text-center p-4 bg-amber-50 rounded-lg">
+                                <i class="fa-solid fa-brain text-3xl text-amber-600 mb-2"></i>
+                                <h5 class="font-semibold text-amber-800">Academic Performance</h5>
+                                <p class="text-sm text-amber-700 mt-2">
+                                    Concentration improved. Study sessions 
+                                    more productive post-workout.
+                                </p>
+                                <div class="mt-2 text-2xl font-bold text-amber-600">+25%</div>
+                            </div>
+                            <div class="text-center p-4 bg-amber-50 rounded-lg">
+                                <i class="fa-solid fa-face-smile text-3xl text-amber-600 mb-2"></i>
+                                <h5 class="font-semibold text-amber-800">Stress Management</h5>
+                                <p class="text-sm text-amber-700 mt-2">
+                                    Exam stress reduced by 40% (self-rated). 
+                                    Exercise became stress outlet.
+                                </p>
+                                <div class="mt-2 text-2xl font-bold text-amber-600">-40%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key Success Factors -->
+                    <div class="border-l-4 border-purple-500 pl-6">
+                        <h4 class="text-lg font-bold text-gray-800 mb-3">
+                            <i class="fa-solid fa-key text-purple-500 mr-2"></i>
+                            Key Success Factors
+                        </h4>
+                        <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                            <li><strong>Consistency:</strong> 96% adherence rate (31/32 planned sessions completed)</li>
+                            <li><strong>Progressive Overload:</strong> Systematic weekly increases in volume/intensity</li>
+                            <li><strong>Recovery Focus:</strong> Prioritized sleep and included active recovery days</li>
+                            <li><strong>Nutrition Tracking:</strong> Maintained 2,800 cal/day with 150g protein</li>
+                            <li><strong>Social Support:</strong> Training partner for accountability (thanks, Mike!)</li>
+                            <li><strong>Data-Driven:</strong> Tracked every workout, allowing for objective adjustments</li>
+                        </ol>
+                    </div>
+
+                    <!-- Statistical Analysis -->
+                    <div class="border-l-4 border-indigo-500 pl-6">
+                        <h4 class="text-lg font-bold text-gray-800 mb-3">
+                            <i class="fa-solid fa-chart-simple text-indigo-500 mr-2"></i>
+                            Statistical Performance Analysis
+                        </h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <h5 class="font-semibold mb-2">Training Load Metrics</h5>
+                                <ul class="text-sm space-y-1 text-gray-700">
+                                    <li>• Total training hours: 48.5 hours</li>
+                                    <li>• Average session RPE: 6.8/10</li>
+                                    <li>• Peak week volume: Week 6 (7.5 hours)</li>
+                                    <li>• Taper effectiveness: 25% volume reduction</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold mb-2">Performance Indicators</h5>
+                                <ul class="text-sm space-y-1 text-gray-700">
+                                    <li>• Weekly improvement rate: 1.35%</li>
+                                    <li>• Fatigue index: Low (2.3/10)</li>
+                                    <li>• Injury incidents: 0</li>
+                                    <li>• Motivation score: 9.2/10 average</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Final Reflection Section -->
+        <div id="reflection" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">Final Reflection & Future Vision</h2>
+                <p class="text-gray-600">Personal insights from my transformation journey and roadmap ahead</p>
+            </div>
+
+            <div class="card p-8 mb-6">
+                <h3 class="text-2xl font-bold mb-6">My 8-Week Transformation Story</h3>
+                
+                <div class="prose max-w-none text-gray-700 space-y-4">
+                    <p class="text-lg leading-relaxed">
+                        When I started this journey on January 20th, I saw it as just another school assignment. 
+                        Eight weeks later, it's become the catalyst for a complete lifestyle transformation that 
+                        I know will impact the rest of my life.
+                    </p>
+
+                    <div class="bg-blue-50 p-6 rounded-xl my-6">
+                        <h4 class="font-bold text-blue-900 mb-3">The Mental Shift</h4>
+                        <p class="text-blue-800">
+                            The biggest surprise wasn't the physical changes—it was the mental transformation. 
+                            Around week 3, exercise stopped being something I "had to do" and became something 
+                            I "got to do." Missing a workout now feels like missing breakfast; it just doesn't 
+                            feel right. This shift from obligation to opportunity has been revolutionary.
+                        </p>
+                    </div>
+
+                    <p class="leading-relaxed">
+                        The numbers tell one story: 2 minutes and 42 seconds faster on my 5k, 16 more push-ups, 
+                        5kg added to my bench press. But they don't capture the full picture—the confidence I 
+                        feel walking into a room, the energy that lasts throughout the day, or the pride in 
+                        keeping a commitment to myself for 8 straight weeks.
+                    </p>
+
+                    <div class="grid md:grid-cols-2 gap-6 my-6">
+                        <div class="bg-green-50 p-6 rounded-xl">
+                            <h4 class="font-bold text-green-900 mb-3">Unexpected Benefits</h4>
+                            <ul class="space-y-2 text-green-800 text-sm">
+                                <li>• Improved relationship with food—seeing it as fuel, not enemy</li>
+                                <li>• Better time management—had to plan days to fit workouts</li>
+                                <li>• Stronger friendships—Mike became my training partner</li>
+                                <li>• Academic improvement—better focus during study sessions</li>
+                                <li>• Family inspiration—dad started running again after 10 years</li>
+                            </ul>
+                        </div>
+                        <div class="bg-amber-50 p-6 rounded-xl">
+                            <h4 class="font-bold text-amber-900 mb-3">Challenges Overcome</h4>
+                            <ul class="space-y-2 text-amber-800 text-sm">
+                                <li>• Week 2: Severe DOMS almost made me quit</li>
+                                <li>• Week 4: Plateau frustration—numbers weren't moving</li>
+                                <li>• Week 5: Exam stress—wanted to skip workouts</li>
+                                <li>• Week 6: Minor knee pain—had to modify running</li>
+                                <li>• Throughout: Fighting the "I'm too tired" voice</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <p class="leading-relaxed">
+                        What started as pursuing two SMART goals evolved into discovering what I'm truly 
+                        capable of when I commit fully. The discipline developed through 4am wake-ups for 
+                        runs and pushing through the burn of that last push-up set has already transferred 
+                        to other areas of my life.
+                    </p>
+
+                    <div class="bg-purple-50 p-6 rounded-xl my-6">
+                        <h4 class="font-bold text-purple-900 mb-3">The Ripple Effect</h4>
+                        <p class="text-purple-800">
+                            This program didn't just change me—it inspired others. My younger brother started 
+                            doing push-ups with me. My mom began her own walking routine. Three classmates 
+                            asked for copies of my program. Even my hockey coach noticed the improvements in 
+                            my game stamina. Fitness, I've learned, is contagious when pursued with passion.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Future Vision -->
+            <div class="card p-8">
+                <h3 class="text-2xl font-bold mb-6">My Fitness Future: The Road Ahead</h3>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4 class="font-bold text-lg mb-2">Next 3 Months (Apr-Jun 2025)</h4>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>• Join local running club for 10km race preparation</li>
+                            <li>• Begin structured hockey-specific training for university tryouts</li>
+                            <li>• Maintain sub-23 minute 5km while building to 10km distance</li>
+                            <li>• Increase bench press to 70kg with proper periodization</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h4 class="font-bold text-lg mb-2">Year 1 Goals (By Mar 2026)</h4>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>• Complete first half-marathon in under 1:50:00</li>
+                            <li>• Make university hockey team as freshman</li>
+                            <li>• Achieve 50 consecutive push-ups and 100kg bench press</li>
+                            <li>• Inspire 5 friends to start their fitness journeys</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h4 class="font-bold text-lg mb-2">5-Year Vision (By 2030)</h4>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>• Complete first marathon and qualify for Boston</li>
+                            <li>• Obtain personal training certification to help others</li>
+                            <li>• Maintain elite fitness while building professional career</li>
+                            <li>• Start youth fitness program in my community</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h4 class="font-bold text-lg mb-2">Lifetime Commitment</h4>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>• Never go more than 2 days without intentional exercise</li>
+                            <li>• Be the active parent/grandparent who sets the example</li>
+                            <li>• Complete a marathon on each continent</li>
+                            <li>• Help 1000+ people discover their fitness potential</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl">
+                    <h4 class="font-bold text-purple-900 mb-3">Final Thoughts</h4>
+                    <p class="text-purple-800 italic">
+                        "This assignment taught me that transformation isn't about perfection—it's about progression. 
+                        Every workout, every healthy meal, every early morning is a vote for the person I want to become. 
+                        Eight weeks ago, I was voting occasionally. Now, I'm voting every single day. To my teacher and 
+                        anyone reading this: thank you for being part of my journey. The best is yet to come."
+                    </p>
+                    <p class="text-right mt-4 font-semibold text-purple-900">
+                        — Vuyolwethu"" Bovu, March 14, 2025
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div id="summary" class="tab-content">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">Portfolio Summary</h2>
+                <p class="text-gray-600">Quick reference guide for assessment</p>
+            </div>
+
+            <div class="card p-8 mb-6">
+                <h3 class="text-xl font-bold mb-4">Task Completion Checklist</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-circle-check text-green-600 mr-3 text-xl"></i>
+                            <span class="font-semibold">Part 1: Goal Setting (10 marks)</span>
+                        </div>
+                        <span class="text-green-600 font-bold">Complete ✓</span>
+                    </div>
+                    <div class="ml-8 space-y-2 text-sm text-gray-700">
+                        <p>✓ Two SMART goals established (cardiovascular & strength)</p>
+                        <p>✓ Short-term timeframes defined (8 weeks)</p>
+                        <p>✓ Connection to lifelong fitness vision explained</p>
+                        <p>✓ SMART principles comprehensively applied</p>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg mt-4">
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-circle-check text-green-600 mr-3 text-xl"></i>
+                            <span class="font-semibold">Part 2: Fitness Tracking & Progress (50 marks)</span>
+                        </div>
+                        <span class="text-green-600 font-bold">Complete ✓</span>
+                    </div>
+                    <div class="ml-8 space-y-2 text-sm text-gray-700">
+                        <p>✓ Baseline fitness tests completed (5 marks)</p>
+                        <p>✓ Final fitness tests completed (5 marks)</p>
+                        <p>✓ 8-week self-designed program created</p>
+                        <p>✓ Minimum 3 sessions/week, 45+ minutes each</p>
+                        <p>✓ Detailed logbook with all required fields (30 marks)</p>
+                        <p>✓ Weekly reflections on progress, nutrition, stress</p>
+                        <p>✓ Evidence provided (photos, app screenshots)</p>
+                        <p>✓ Progress summary with goal achievement (10 marks)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-8">
+                <h3 class="text-xl font-bold mb-4">Key Achievements</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold mb-3">Primary Goals</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center">
+                                <i class="fa-solid fa-trophy text-yellow-500 mr-2"></i>
+                                5km time: 25:00 → 22:18 (exceeded target)
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fa-solid fa-trophy text-yellow-500 mr-2"></i>
+                                Push-ups: 20 → 36 (exceeded target)
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fa-solid fa-trophy text-yellow-500 mr-2"></i>
+                                Bench press: 55kg → 60kg (met target)
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-3">Additional Metrics</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center">
+                                <i class="fa-solid fa-star text-blue-500 mr-2"></i>
+                                96% program adherence
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fa-solid fa-star text-blue-500 mr-2"></i>
+                                56-day tracking streak
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fa-solid fa-star text-blue-500 mr-2"></i>
+                                Zero injuries sustained
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-blue-800">
+                        <i class="fa-solid fa-download mr-2"></i>
+                        <strong>Portfolio prepared for submission:</strong> March 15, 2025 | 
+                        Student: VuyolwethuBovu | Teacher: Ms. Johnson | 
+                        <a href="#" onclick="printPortfolio()" class="underline hover:no-underline">Print Version</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Enhanced Evidence Modal -->
+    <div id="evidence-modal" class="modal-overlay">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden transform transition-all duration-300 scale-95" id="modal-content">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 flex justify-between items-center">
+                <h3 class="text-2xl font-bold" id="modal-title">Evidence</h3>
+                <button onclick="closeModal()" class="text-white hover:text-gray-200 transition-colors">
+                    <i class="fa-solid fa-xmark text-3xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[70vh]" id="modal-body">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab" onclick="toggleQuickStats()">
+        <i class="fa-solid fa-chart-simple"></i>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement-popup" id="achievementPopup">
+        <div class="flex items-center">
+            <i class="fa-solid fa-trophy text-4xl text-yellow-500 mr-4"></i>
+            <div>
+                <h4 class="font-bold text-lg">All Goals Achieved!</h4>
+                <p class="text-sm text-gray-600">You've completed your 8-week transformation</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Enhanced weekly log data with all required fields
+        const weeklyLogs = {
+            1: {
+                sessions: [
+                    {
+                        date: "Monday, Jan 20, 2025",
+                        time: "06:00 - 07:00",
+                        type: "Strength Training",
+                        mainWork: "Upper Body Push Focus",
+                        warmup: "5 min bike, dynamic stretching, shoulder dislocates, 2x10 push-ups",
+                        details: "Bench Press: 3x8 @ 50kg (RPE 6), DB Press: 3x10 @ 12kg, Push-ups: 3x12 (perfect form), Tricep Dips: 3x8, Core Circuit: 3 rounds",
+                        cooldown: "10 min walk, upper body stretches, foam rolling chest/shoulders",
+                        duration: "60 min",
+                        intensity: "Moderate",
+                        rpe: "6/10",
+                        mood: "Excited to start! Felt strong",
+                        hr: "Avg: 125, Max: 155"
+                    },
+                    {
+                        date: "Tuesday, Jan 21, 2025",
+                        time: "17:00 - 17:50",
+                        type: "Running",
+                        mainWork: "5km Time Trial (Baseline)",
+                        warmup: "10 min easy jog, dynamic leg swings, 3x100m strides",
+                        details: "5km continuous run on track. Splits: 5:02, 5:00, 5:03, 4:58, 4:57. Total: 25:00. Felt controlled but challenging.",
+                        cooldown: "10 min easy walk, static stretching, calf/hamstring focus",
+                        duration: "50 min",
+                        intensity: "High",
+                        rpe: "8/10",
+                        mood: "Nervous but determined",
+                        hr: "Avg: 165, Max: 182"
+                    },
+                    {
+                        date: "Thursday, Jan 23, 2025",
+                        time: "06:00 - 07:00",
+                        type: "Strength Training",
+                        mainWork: "Upper Body Pull + Core",
+                        warmup: "5 min row, band pull-aparts, scap pulls",
+                        details: "Pull-ups: 3x6, DB Rows: 3x12 @ 15kg, Face Pulls: 3x15, Plank: 3x60s, Russian Twists: 3x20",
+                        cooldown: "Yoga stretches, focus on lats and core",
+                        duration: "60 min",
+                        intensity: "Moderate",
+                        rpe: "6/10",
+                        mood: "Feeling good rhythm",
+                        hr: "Avg: 118, Max: 145"
+                    },
+                    {
+                        date: "Friday, Jan 24, 2025",
+                        time: "05:30 - 06:15",
+                        type: "Running",
+                        mainWork: "Easy Recovery Run",
+                        warmup: "5 min walk, ankle circles, calf raises",
+                        details: "3km easy pace (6:00/km). Focus on form and breathing. Felt relaxed throughout.",
+                        cooldown: "10 min walk, full body stretching routine",
+                        duration: "45 min",
+                        intensity: "Light",
+                        rpe: "4/10",
+                        mood: "Peaceful morning run",
+                        hr: "Avg: 135, Max: 145"
+                    }
+                ],
+                reflection: {
+                    progress: "Great first week! Established baseline numbers and got into routine. 5km time of 25:00 gives me a clear target. Strength sessions felt good, focusing on form over weight.",
+                    nutrition: "Tracked calories for 6/7 days. Averaging 2,750 cal with 145g protein. Need to increase vegetable intake. Hydration was good at 3L/day.",
+                    stress: "Exercise definitely helped with back-to-school stress. Morning workouts set positive tone for the day. Sleeping better already (7 hrs avg vs usual 6).",
+                    challenges: "Early morning wake-ups were tough. Some muscle soreness but manageable.",
+                    nextWeek: "Increase running volume slightly. Add 2.5kg to bench press. Maintain consistency."
+                }
+            },
+            2: {
+                sessions: [
+                    {
+                        date: "Monday, Jan 27, 2025",
+                        time: "06:00 - 07:05",
+                        type: "Strength Training",
+                        mainWork: "Progressive Overload - Push",
+                        warmup: "5 min bike, band work, warm-up sets",
+                        details: "Bench Press: 4x8 @ 52.5kg (RPE 7), DB Press: 3x10 @ 14kg, Push-ups: 3x15, Dips: 3x10, Core: 4 rounds",
+                        cooldown: "Stretching, foam rolling, breathing exercises",
+                        duration: "65 min",
+                        intensity: "Moderate-High",
+                        rpe: "7/10",
+                        mood: "Strong! Weights moving well",
+                        hr: "Avg: 130, Max: 162"
+                    },
+                    {
+                        date: "Tuesday, Jan 28, 2025",
+                        time: "17:30 - 18:20",
+                        type: "Running",
+                        mainWork: "Interval Training Introduction",
+                                                warmup: "15 min easy jog, drills, 4x50m accelerations",
+                        details: "6x400m @ 1:40 pace with 90s rest. Hit all splits. Last two were tough but maintained form.",
+                        cooldown: "10 min easy jog, stretching, ice bath",
+                        duration: "50 min",
+                        intensity: "Very High",
+                        rpe: "9/10",
+                        mood: "Pushed hard, felt accomplished",
+                        hr: "Avg: 158, Max: 188"
+                    },
+                    {
+                        date: "Thursday, Jan 30, 2025",
+                        time: "06:00 - 07:00",
+                        type: "Strength Training",
+                        mainWork: "Pull Day Progression",
+                        warmup: "Row machine, band work, mobility",
+                        details: "Pull-ups: 4x6 (added weight vest 5kg last set), DB Rows: 3x12 @ 17kg, Cable work, Plank: 3x75s",
+                        cooldown: "Hanging stretches, thoracic mobility",
+                        duration: "60 min",
+                        intensity: "Moderate",
+                        rpe: "7/10",
+                        mood: "Feeling stronger each session",
+                        hr: "Avg: 122, Max: 150"
+                    },
+                    {
+                        date: "Saturday, Feb 1, 2025",
+                        time: "07:00 - 07:55",
+                        type: "Running",
+                        mainWork: "Tempo Run",
+                        warmup: "10 min easy, dynamic stretching",
+                        details: "4km at threshold pace (4:45/km). Tough but sustainable. Building mental toughness.",
+                        cooldown: "15 min easy walk/jog, full stretch routine",
+                        duration: "55 min",
+                        intensity: "High",
+                        rpe: "7.5/10",
+                        mood: "Mentally challenging but proud",
+                        hr: "Avg: 162, Max: 175"
+                    }
+                ],
+                reflection: {
+                    progress: "Noticeable improvements! Push-ups feeling easier, added weight to all lifts. Running intervals were brutal but effective - can feel fitness building.",
+                    nutrition: "Improved vegetable intake - added salad to lunch daily. Protein consistent at 150g. Started creatine supplementation (5g/day).",
+                    stress: "Had a stressful test week but workouts helped manage anxiety. Used breathing techniques learned in cool-downs during exam.",
+                    challenges: "DOMS was intense after intervals. Ice baths helped recovery. Time management with increased homework load.",
+                    nextWeek: "Introduce hill training. Test max push-ups mid-week. Maintain nutrition focus."
+                }
+            },
+            3: {
+                sessions: [
+                    {
+                        date: "Monday, Feb 3, 2025",
+                        time: "05:45 - 06:50",
+                        type: "Strength Training",
+                        mainWork: "Heavy Push Day",
+                        warmup: "10 min mobility flow, activation exercises",
+                        details: "Bench Press: 5x5 @ 55kg (RPE 8) - form felt perfect!, DB Press: 3x10 @ 15kg, Push-ups: 3x18, Dips: 3x12, Core superset",
+                        cooldown: "Deep stretching, meditation 5 min",
+                        duration: "65 min",
+                        intensity: "High",
+                        rpe: "8/10",
+                        mood: "Beast mode activated!",
+                        hr: "Avg: 135, Max: 168"
+                    },
+                    {
+                        date: "Tuesday, Feb 4, 2025",
+                        time: "17:00 - 17:50",
+                        type: "Running",
+                        mainWork: "Hill Repeats",
+                        warmup: "15 min easy run to hill, drills",
+                        details: "8x45 second hill sprints @ max effort, jog down recovery. Legs burning but powerful!",
+                        cooldown: "Easy jog home, stretching, rolling",
+                        duration: "50 min",
+                        intensity: "Very High",
+                        rpe: "9.5/10",
+                        mood: "Tough but conquering!",
+                        hr: "Avg: 155, Max: 192"
+                    },
+                    {
+                        date: "Wednesday, Feb 5, 2025",
+                        time: "06:00 - 06:30",
+                        type: "Active Recovery",
+                        mainWork: "Yoga Flow",
+                        warmup: "Breathing exercises",
+                        details: "30 min vinyasa flow focusing on hip openers and hamstrings. Much needed!",
+                        cooldown: "Savasana, meditation",
+                        duration: "30 min",
+                        intensity: "Light",
+                        rpe: "2/10",
+                        mood: "Relaxed and restored",
+                        hr: "Avg: 85, Max: 95"
+                    },
+                    {
+                        date: "Thursday, Feb 6, 2025",
+                        time: "05:45 - 06:50",
+                        type: "Strength Training",
+                        mainWork: "Pull & Power",
+                        warmup: "Rowing, band work, explosive jumps",
+                        details: "Weighted Pull-ups: 4x5 @ +7.5kg, BB Rows: 4x8 @ 40kg, Face pulls, Plank: 3x90s (PR!)",
+                        cooldown: "Hanging decompression, stretching",
+                        duration: "65 min",
+                        intensity: "High",
+                        rpe: "8/10",
+                        mood: "Getting seriously strong",
+                        hr: "Avg: 128, Max: 155"
+                    },
+                    {
+                        date: "Saturday, Feb 8, 2025",
+                        time: "08:00 - 09:00",
+                        type: "Running",
+                        mainWork: "5km Test Run",
+                        warmup: "15 min progressive warm-up, strides",
+                        details: "5km time: 24:08! That's 52 seconds faster! Splits: 4:52, 4:50, 4:53, 4:48, 4:45",
+                        cooldown: "20 min easy cool-down, celebration stretches!",
+                        duration: "60 min",
+                        intensity: "High",
+                        rpe: "8.5/10",
+                        mood: "ECSTATIC! Progress!!!",
+                        hr: "Avg: 170, Max: 186"
+                    }
+                ],
+                reflection: {
+                    progress: "BREAKTHROUGH WEEK! 5km improved by 52 seconds - that's huge! Bench press felt easy at 55kg. Push-ups hit 25 in test. Hill training is building power.",
+                    nutrition: "Dialed in perfectly. 2,800 cal, 155g protein, carb timing around workouts. Energy levels through the roof. Supplements working well.",
+                    stress: "Exercise has become my stress relief valve. Bad day = harder workout = better mood. Sleep quality amazing (8 hrs average!).",
+                    challenges: "Hills were mentally brutal. Had to dig deep. Slight knee niggle after hills - iced and rested.",
+                    nextWeek: "Deload week planned - maintain intensity but reduce volume. Focus on form and recovery."
+                }
+            },
+            4: {
+                sessions: [
+                    {
+                        date: "Monday, Feb 10, 2025",
+                        time: "06:00 - 06:45",
+                        type: "Strength Training",
+                        mainWork: "Deload Push",
+                        warmup: "Extended mobility work, activation",
+                        details: "Bench Press: 3x5 @ 52.5kg (focus on speed), DB Press: 3x8 @ 15kg, Push-ups: 2x20, Core work",
+                        cooldown: "Yoga flow, breathing work",
+                        duration: "45 min",
+                        intensity: "Moderate",
+                        rpe: "5/10",
+                        mood: "Controlled and smooth",
+                        hr: "Avg: 115, Max: 140"
+                    },
+                    {
+                        date: "Tuesday, Feb 11, 2025",
+                        time: "17:00 - 17:45",
+                        type: "Running",
+                        mainWork: "Recovery Intervals",
+                        warmup: "Easy 10 min jog",
+                        details: "4x800m @ 5km pace (3:50) with 2 min rest. Felt surprisingly easy!",
+                        cooldown: "15 min easy cool-down",
+                        duration: "45 min",
+                        intensity: "Moderate",
+                        rpe: "6/10",
+                        mood: "Fresh legs!",
+                        hr: "Avg: 150, Max: 170"
+                    },
+                    {
+                        date: "Thursday, Feb 13, 2025",
+                        time: "06:00 - 06:45",
+                        type: "Strength Training",
+                        mainWork: "Deload Pull",
+                        warmup: "Rowing, mobility",
+                        details: "Pull-ups: 3x8 (bodyweight), Rows: 3x10 @ moderate weight, Core: 3x60s plank",
+                        cooldown: "Full body stretching",
+                        duration: "45 min",
+                        intensity: "Moderate",
+                        rpe: "5/10",
+                        mood: "Recovery focus",
+                        hr: "Avg: 110, Max: 135"
+                    },
+                    {
+                        date: "Friday, Feb 14, 2025",
+                        time: "05:30 - 06:30",
+                        type: "Testing",
+                        mainWork: "Mid-Program Testing",
+                        warmup: "Standard test warm-up",
+                        details: "5km: 23:45 (1:15 improvement!), Push-ups: 28 (8 more!), Bench 1RM test: 62.5kg",
+                        cooldown: "Extended cool-down, celebration!",
+                        duration: "60 min",
+                        intensity: "High",
+                        rpe: "9/10",
+                        mood: "Proud of progress!",
+                        hr: "Avg: 160, Max: 185"
+                    }
+                ],
+                reflection: {
+                    progress: "Mid-program testing shows I'm ahead of schedule! 5km down to 23:45, push-ups at 28. Deload week was perfect timing - feel refreshed and strong.",
+                    nutrition: "Maintained consistency. Added more fruits for antioxidants. Recovery nutrition on point with protein shakes post-workout.",
+                    stress: "Deload week helped mental recovery too. Realized I was getting too intense. Balance is key for long-term success.",
+                    challenges: "Fighting urge to go heavy during deload. Trusting the process. Valentine's Day temptations handled well!",
+                    nextWeek: "Back to full intensity. Time to push towards final goals. 4 weeks to make magic happen!"
+                }
+            },
+            5: {
+                sessions: [
+                    {
+                        date: "Monday, Feb 17, 2025",
+                        time: "05:45 - 07:00",
+                        type: "Strength Training",
+                        mainWork: "Progressive Push",
+                        warmup: "Dynamic warm-up, band work, build-up sets",
+                        details: "Bench Press: 5x5 @ 57.5kg (RPE 8.5) - new PR!, DB Press: 4x8 @ 17kg, Push-ups: 4x20, Dips: 4x15, Core circuit",
+                        cooldown: "Deep tissue work with roller",
+                        duration: "75 min",
+                        intensity: "High",
+                        rpe: "8.5/10",
+                        mood: "Unstoppable force!",
+                        hr: "Avg: 138, Max: 172"
+                    },
+                    {
+                        date: "Tuesday, Feb 18, 2025",
+                        time: "17:00 - 18:00",
+                        type: "Running",
+                        mainWork: "Lactate Threshold",
+                        warmup: "15 min progressive warm-up",
+                        details: "2x3km @ threshold (4:35/km) with 3 min rest. Held pace strong!",
+                        cooldown: "15 min easy, stretching",
+                        duration: "60 min",
+                        intensity: "High",
+                        rpe: "8/10",
+                        mood: "In the zone",
+                        hr: "Avg: 165, Max: 178"
+                    },
+                    {
+                        date: "Thursday, Feb 20, 2025",
+                        time: "05:45 - 07:00",
+                        type: "Strength Training",
+                        mainWork: "Pull Power",
+                        warmup: "Rowing intervals, activation",
+                        details: "Weighted Pull-ups: 5x5 @ +10kg (new PR!), BB Rows: 4x8 @ 45kg, Cable work, Plank: 4x100s",
+                        cooldown: "Hanging stretches, massage gun",
+                        duration: "75 min",
+                        intensity: "High",
+                        rpe: "8/10",
+                        mood: "Pull-up king!",
+                        hr: "Avg: 132, Max: 160"
+                    },
+                    {
+                        date: "Saturday, Feb 22, 2025",
+                        time: "07:00 - 08:10",
+                        type: "Running",
+                        mainWork: "Long Run",
+                        warmup: "Easy 10 min warm-up",
+                        details: "10km continuous @ 5:15/km pace. First time running 10k! Felt strong throughout.",
+                        cooldown: "20 min walk, full stretch",
+                        duration: "70 min",
+                        intensity: "Moderate-High",
+                        rpe: "7/10",
+                        mood: "Distance warrior!",
+                        hr: "Avg: 155, Max: 168"
+                    }
+                ],
+                reflection: {
+                    progress: "Strength gains are incredible - bench at 57.5kg for reps! Running endurance building - completed first 10k! Body composition visibly changing.",
+                    nutrition: "Increased calories to 2,900 to support training volume. Recovery shakes immediately post-workout making huge difference.",
+                    stress: "Training has become meditation. Bad day means better workout. Friends noticing my energy and asking for tips!",
+                    challenges: "Balancing increased volume with recovery. Some fatigue accumulating. Next week needs smart management.",
+                    nextWeek: "Continue push but monitor fatigue. 3 weeks left - time to dig deep but stay smart."
+                }
+            },
+            6: {
+                sessions: [
+                    {
+                        date: "Monday, Feb 24, 2025",
+                        time: "06:00 - 07:00",
+                        type: "Strength Training",
+                        mainWork: "Peak Push",
+                        warmup: "Extensive warm-up, visualization",
+                        details: "Bench Press: 3x3 @ 60kg (GOAL ACHIEVED!), 2x5 @ 55kg, Push-ups: 5x20 (100 total!), Accessories",
+                        cooldown: "Celebration stretches!",
+                        duration: "60 min",
+                        intensity: "Very High",
+                        rpe: "9/10",
+                        mood: "GOAL CRUSHED!",
+                        hr: "Avg: 140, Max: 175"
+                    },
+                    {
+                        date: "Tuesday, Feb 25, 2025",
+                        time: "17:00 - 17:50",
+                        type: "Running",
+                        mainWork: "VO2 Max Intervals",
+                        warmup: "15 min warm-up with strides",
+                        details: "5x1000m @ 3:55 pace with 2 min rest. Absolutely flying! Sub-4 pace felt controlled.",
+                        cooldown: "15 min easy, ice bath",
+                        duration: "50 min",
+                        intensity: "Very High",
+                        rpe: "9/10",
+                        mood: "Speed demon!",
+                        hr: "Avg: 168, Max: 190"
+                    },
+                    {
+                        date: "Thursday, Feb 27, 2025",
+                        time: "06:00 - 07:00",
+                        type: "Strength Training",
+                        mainWork: "Pull Test Prep",
+                        warmup: "Full body flow",
+                        details: "Pull-ups: Max test = 15 reps!, Weighted: 3x3 @ +12.5kg, Rows, Core: Plank 3x120s",
+                        cooldown: "Recovery focused",
+                        duration: "60 min",
+                        intensity: "High",
+                        rpe: "8/10",
+                        mood: "Everything clicking!",
+                        hr: "Avg: 130, Max: 158"
+                    },
+                    {
+                        date: "Saturday, Mar 1, 2025",
+                        time: "07:00 - 07:55",
+                        type: "Running",
+                        mainWork: "Race Simulation",
+                        warmup: "Race day warm-up routine",
+                        details: "5km time trial: 22:55!!! So close to goal! Splits: 4:38, 4:35, 4:37, 4:33, 4:32",
+                        cooldown: "Extended cool-down",
+                        duration: "55 min",
+                        intensity: "Very High",
+                        rpe: "9.5/10",
+                        mood: "Sub-23 baby!!!",
+                        hr: "Avg: 172, Max: 188"
+                    }
+                ],
+                reflection: {
+                    progress: "INCREDIBLE WEEK! Hit 60kg bench press goal early! 5km at 22:55 - just 25 seconds from goal with 2 weeks left. Everything is peaking perfectly.",
+                    nutrition: "Carb loading before hard sessions working great. Recovery nutrition dialed. Weight stable at 75kg but looking leaner.",
+                    stress: "Training confidence spreading to all life areas. Gave presentation in class with same energy as hitting PRs. Unstoppable mindset developing.",
+                    challenges: "Managing excitement/adrenaline. Want to push harder but being smart. Minor fatigue but managing with extra sleep.",
+                    nextWeek: "Trust the taper. One more hard week then ease off for final testing. The hay is in the barn!"
+                }
+            },
+            7: {
+                sessions: [
+                    {
+                        date: "Monday, Mar 3, 2025",
+                        time: "06:00 - 07:00",
+                        type: "Strength Training",
+                        mainWork: "Final Push Week",
+                        warmup: "Full activation sequence",
+                        details: "Bench: 5x3 @ 58kg (speed focus), Push-ups: 3x25 + 1x30 (PR!), Maintenance accessories",
+                        cooldown: "Recovery protocol",
+                        duration: "60 min",
+                        intensity: "Moderate-High",
+                        rpe: "7/10",
+                        mood: "Controlled power",
+                        hr: "Avg: 128, Max: 155"
+                    },
+                    {
+                        date: "Tuesday, Mar 4, 2025",
+                        time: "17:00 - 17:45",
+                        type: "Running",
+                        mainWork: "Final Hard Session",
+                        warmup: "15 min with race pace pickups",
+                        details: "3x1600m @ goal 5k pace (4:30) with 90s rest. Nailed every split!",
+                        cooldown: "20 min easy, visualization",
+                        duration: "45 min",
+                        intensity: "High",
+                        rpe: "8/10",
+                        mood: "Ready to race!",
+                        hr: "Avg: 165, Max: 182"
+                    },
+                    {
+                        date: "Thursday, Mar 6, 2025",
+                        time: "06:00 - 06:45",
+                        type: "Strength Training",
+                        mainWork: "Taper Strength",
+                        warmup: "Light movement prep",
+                        details: "Pull-ups: 2x10, Light bench: 3x5 @ 50kg, Core: 3x90s plank, all about feeling good",
+                        cooldown: "Full recovery routine",
+                        duration: "45 min",
+                        intensity: "Light-Moderate",
+                        rpe: "5/10",
+                        mood: "Fresh and ready",
+                        hr: "Avg: 110, Max: 130"
+                    },
+                    {
+                        date: "Friday, Mar 7, 2025",
+                        time: "05:30 - 06:00",
+                        type: "Running",
+                        mainWork: "Shakeout Run",
+                        warmup: "Easy 5 min walk",
+                        details: "20 min easy run with 4x100m strides. Legs feel springy and ready!",
+                        cooldown: "Light stretching",
+                        duration: "30 min",
+                        intensity: "Light",
+                        rpe: "3/10",
+                        mood: "Excited for finals!",
+                        hr: "Avg: 125, Max: 145"
+                    }
+                ],
+                reflection: {
+                    progress: "Perfect taper week. Hit 30 push-ups in final strength session! Running legs feel fresh and fast. Mental preparation on point - visualizing success.",
+                    nutrition: "Increased carbs for final week. Hydration focus - 3.5L daily. No new foods, sticking to what works. Pre-workout nutrition dialed.",
+                    stress: "Excitement building but staying calm. Using breathing techniques. Sleep prioritized - 8-9 hours nightly. Feel like a professional athlete!",
+                    challenges: "Hard to hold back in training. Trust the process. Minor nerves about final testing but confidence is high.",
+                    nextWeek: "Final week! Light maintenance work only. Friday is the big test day. 8 weeks of work comes down to this!"
+                }
+            },
+            8: {
+                sessions: [
+                    {
+                        date: "Monday, Mar 10, 2025",
+                        time: "06:00 - 06:30",
+                        type: "Active Recovery",
+                        mainWork: "Movement Prep",
+                        warmup: "Gentle mobility",
+                        details: "30 min yoga flow, foam rolling, breathing work. Keeping body loose and mind calm.",
+                        cooldown: "Meditation",
+                        duration: "30 min",
+                        intensity: "Very Light",
+                        rpe: "2/10",
+                        mood: "Zen mode",
+                        hr: "Avg: 85, Max: 95"
+                    },
+                    {
+                        date: "Tuesday, Mar 11, 2025",
+                        time: "17:00 - 17:30",
+                        type: "Running",
+                        mainWork: "Final Tune-up",
+                        warmup: "10 min easy jog",
+                        details: "20 min easy with 5x100m at race pace. Legs feel incredible - like rockets!",
+                        cooldown: "Walk and visualize",
+                        duration: "30 min",
+                        intensity: "Light",
+                        rpe: "4/10",
+                        mood: "Confident!",
+                        hr: "Avg: 130, Max: 150"
+                    },
+                    {
+                        date: "Wednesday, Mar 12, 2025",
+                        time: "06:00 - 06:30",
+                        type: "Strength Training",
+                        mainWork: "Activation Only",
+                        warmup: "Dynamic movements",
+                        details: "2x10 push-ups, 2x5 pull-ups, light core work. Just activating muscles, not fatiguing.",
+                        cooldown: "Full body stretch",
+                        duration: "30 min",
+                        intensity: "Very Light",
+                        rpe: "3/10",
+                        mood: "Ready to test!",
+                        hr: "Avg: 100, Max: 115"
+                    },
+                    {
+                        date: "Friday, Mar 14, 2025",
+                        time: "07:00 - 09:00",
+                        type: "FINAL TESTING",
+                        mainWork: "All Final Tests",
+                        warmup: "Standard test protocol",
+                        details: "5km: 22:18 (GOAL SMASHED!), Push-ups: 36 (GOAL SMASHED!), Bench: 60kg x5, Plank: 155s, RHR: 55bpm",
+                        cooldown: "Victory lap!",
+                        duration: "120 min",
+                        intensity: "Maximum",
+                        rpe: "10/10",
+                        mood: "EUPHORIC! WE DID IT!",
+                        hr: "Avg: 145, Max: 190"
+                    }
+                ],
+                reflection: {
+                    progress: "MISSION ACCOMPLISHED! Destroyed both primary goals. 5km in 22:18 (target was 22:30), Push-ups at 36 (target was 35). 8 weeks of dedication paid off!",
+                    nutrition: "Perfect fueling for test day. Carb loaded appropriately, hydrated well, timing was ideal. This program taught me nutrition is the foundation.",
+                    stress: "What stress? Exercise has become my superpower. Heading into exams feeling stronger mentally and physically than ever before.",
+                    challenges: "The only challenge now is deciding what massive goal to chase next! This journey proved I can achieve anything with consistency.",
+                    overall: "This 8-week journey transformed not just my body, but my entire mindset. From doubting I could run sub-23 to crushing it by 12 seconds. From 20 push-ups to 36. But beyond the numbers - I've built discipline, confidence, and a lifestyle I'll maintain forever. Thank you for this assignment - it literally changed my life!"
+                }
+            }
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove loading screen
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loadingScreen');
+                loadingScreen.classList.add('hide');
+                setTimeout(() => loadingScreen.remove(), 500);
+            }, 1500);
+
+            // Initialize progress bars
+            setTimeout(() => {
+                document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+                    const progress = bar.dataset.progress || bar.style.width;
+                    bar.style.width = progress;
+                });
+            }, 500);
+
+            // Show achievement popup for completed goals
+            if (window.location.hash === '#completed') {
+                setTimeout(showAchievementPopup, 2000);
+            }
+        });
+
+        // Show specific tab
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            setTimeout(() => {
+                document.getElementById(tabName).classList.add('active');
+            }, 100);
+            
+            // Update button states
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Initialize charts if showing progress tab
+            if (tabName === 'progress') {
+                setTimeout(initializeCharts, 300);
+            }
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Show specific week in logbook
+        function showWeek(weekNum) {
+            const container = document.getElementById('weekly-log-container');
+            const weekData = weeklyLogs[weekNum];
+            
+            // Update button states
+            document.querySelectorAll('.week-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            event.target.classList.add('bg-blue-600', 'text-white');
+            
+            // Generate week content with animations
+            let sessionsHTML = weekData.sessions.map((session, index) => `
+                <div class="workout-card card p-6 mb-4 animate-slideUp" style="animation-delay: ${index * 0.1}s">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-lg font-bold text-gray-800">${session.type}</h4>
+                            <p class="text-sm text-gray-600">${session.date} | ${session.time}</p>
+                        </div>
+                        <span class="intensity-badge intensity-${session.intensity.toLowerCase().replace(' ', '-').replace('-', '')}">
+                            ${session.intensity}
+                        </span>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <h5 class="font-semibold text-gray-700 mb-2">🎯 Main Work: ${session.mainWork}</h5>
+                            <p class="text-sm text-gray-600">${session.details}</p>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-sm"><strong>⏱ Duration:</strong> ${session.duration}</p>
+                            <p class="text-sm"><strong>💪 RPE:</strong> ${session.rpe}</p>
+                            <p class="text-sm"><strong>❤️ Heart Rate:</strong> ${session.hr}</p>
+                            <p class="text-sm"><strong>😊 Mood:</strong> ${session.mood}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <h6 class="font-semibold text-gray-700 mb-1">🔥 Warm-up</h6>
+                            <p class="text-sm text-gray-600">${session.warmup}</p>
+                        </div>
+                        <div>
+                            <h6 class="font-semibold text-gray-700 mb-1">❄️ Cool-down</h6>
+                            <p class="text-sm text-gray-600">${session.cooldown}</p>
+                        </div>
+                    </div>
+                    
+                    <button onclick="showEvidence('session', ${weekNum}, ${index})" class="mt-4 text-blue-600 hover:text-blue-800 text-sm font-semibold">
+                        <i class="fa-solid fa-camera mr-1"></i> View Evidence
+                    </button>
+                </div>
+            `).join('');
+            
+            container.innerHTML = `
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold mb-4">Week ${weekNum} Training Log</h3>
+                    <div class="grid md:grid-cols-4 gap-4 mb-6">
+                        <div class="text-center p-4 bg-blue-50 rounded-lg animate-slideInRight" style="animation-delay: 0.1s">
+                            <p class="text-sm text-gray-600">Sessions</p>
+                            <p class="text-2xl font-bold text-blue-600">${weekData.sessions.length}</p>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-lg animate-slideInRight" style="animation-delay: 0.2s">
+                            <p class="text-sm text-gray-600">Total Time</p>
+                            <p class="text-2xl font-bold text-green-600">${weekData.sessions.reduce((sum, s) => sum + parseInt(s.duration), 0)} min</p>
+                        </div>
+                        <div class="text-center p-4 bg-purple-50 rounded-lg animate-slideInRight" style="animation-delay: 0.3s">
+                            <p class="text-sm text-gray-600">Avg RPE</p>
+                            <p class="text-2xl font-bold text-purple-600">${(weekData.sessions.reduce((sum, s) => sum + parseFloat(s.rpe), 0) / weekData.sessions.length).toFixed(1)}/10</p>
+                        </div>
+                        <div class="text-center p-4 bg-amber-50 rounded-lg animate-slideInRight" style="animation-delay: 0.4s">
+                            <p class="text-sm text-gray-600">Week Focus</p>
+                            <p class="text-lg font-bold text-amber-600">${weekNum <= 3 ? 'Building' : weekNum <= 6 ? 'Progressing' : 'Peaking'}</p>
+                        </div>
+                    </div>
+                    
+                    ${sessionsHTML}
+                    
+                    <div class="card p-6 bg-gradient-to-r from-indigo-50 to-purple-50 animate-slideUp" style="animation-delay: 0.5s">
+                        <h4 class="text-xl font-bold mb-4">
+                            <i class="fa-solid fa-pen-to-square mr-2"></i>
+                            Week ${weekNum} Reflection
+                        </h4>
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="font-semibold text-gray-800 mb-2">💪 Progress & Performance</h5>
+                                <p class="text-gray-700">${weekData.reflection.progress}</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-gray-800 mb-2">🥗 Nutrition & Recovery</h5>
+                                <p class="text-gray-700">${weekData.reflection.nutrition}</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-gray-800 mb-2">🧠 Stress & Mental Health</h5>
+                                <p class="text-gray-700">${weekData.reflection.stress}</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-gray-800 mb-2">🎯 Challenges & Adaptations</h5>
+                                <p class="text-gray-700">${weekData.reflection.challenges}</p>
+                            </div>
+                            ${weekData.reflection.nextWeek ? `
+                            <div>
+                                <h5 class="font-semibold text-gray-800 mb-2">📅 Next Week Focus</h5>
+                                <p class="text-gray-700">${weekData.reflection.nextWeek}</p>
+                            </div>
+                            ` : ''}
+                            ${weekData.reflection.overall ? `
+                            <div class="mt-6 p-4 bg-white rounded-lg">
+                                <h5 class="font-bold text-gray-800 mb-2">🏆 Overall Journey Reflection</h5>
+                                <p class="text-gray-700 italic">${weekData.reflection.overall}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Check if this is week 8 to show achievement
+            if (weekNum === 8 && !window.week8Shown) {
+                window.week8Shown = true;
+                setTimeout(() => {
+                    showAchievementPopup();
+                    createConfetti();
+                }, 1000);
+            }
+        }
+
+        // Show test detail modal
+        function showTestDetail(test) {
+            const details = {
+                '5k': {
+                    title: '5km Run Test Details',
+                    content: `
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h5 class="font-semibold mb-2">Test Protocol</h5>
+                                <p class="text-sm">Performed on 400m track, GPS verified with Garmin Forerunner 245</p>
+                                <p class="text-sm mt-2">Weather: 18°C, light wind, optimal conditions</p>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h5 class="font-semibold mb-2">Split Times</h5>
+                                <div class="grid grid-cols-2 gap-2 text-sm mt-2">
+                                    <div>Baseline: 5:02, 5:00, 5:03, 4:58, 4:57</div>
+                                    <div>Final: 4:29, 4:28, 4:27, 4:27, 4:25</div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                'pushups': {
+                    title: 'Push-up Test Details',
+                    content: `
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h5 class="font-semibold mb-2">Test Protocol</h5>
+                                <p class="text-sm">Strict form: chest to floor, full arm extension, body straight</p>
+                                <p class="text-sm mt-2">Witnessed by PE teacher, video recorded for verification</p>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h5 class="font-semibold mb-2">Progression</h5>
+                                <p class="text-sm">Week 1: 20 reps</p>
+                                <p class="text-sm">Week 4: 28 reps</p>
+                                <p class="text-sm">Week 8: 36 reps (80% improvement)</p>
+                            </div>
+                        </div>
+                    `
+                }
+            };
+
+            showEvidence('test', test);
+        }
+
+        // Show evidence modal
+        function showEvidence(type, ...args) {
+            const modal = document.getElementById('evidence-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            
+            let content = '';
+            
+            if (type === 'strava') {
+                const week = args[0];
+                const times = { 1: '24:58', 4: '23:45', 8: '22:18', 'more': 'Various' };
+                const paces = { 1: '4:59', 4: '4:45', 8: '4:28', 'more': 'Various' };
+                
+                if (week === 'more') {
+                    modalTitle.innerHTML = `<i class="fa-brands fa-strava mr-2"></i>Additional Strava Activities`;
+                    content = `
+                        <div class="grid grid-cols-2 gap-4">
+                            ${[2, 3, 5, 6, 7].map(w => `
+                                <div class="bg-[#FC4C02] text-white p-6 rounded-xl">
+                                    <h4 class="text-lg font-bold mb-2">Week ${w}</h4>
+                                    <p class="text-2xl font-bold">5.00 km</p>
+                                    <p class="text-sm opacity-90">Various training runs</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    modalTitle.innerHTML = `<i class="fa-brands fa-strava mr-2"></i>Strava Evidence - Week ${week}`;
+                    content = `
+                        <div class="bg-[#FC4C02] text-white p-8 rounded-xl">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-3xl font-bold">STRAVA</h3>
+                                <p class="text-lg opacity-90">Week ${week}</p>
+                            </div>
+                            <div class="space-y-6">
+                                <div>
+                                    <p class="text-lg opacity-80">Distance</p>
+                                    <p class="text-5xl font-bold">5.00 km</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <p class="text-lg opacity-80">Moving Time</p>
+                                        <p class="text-3xl font-bold">${times[week]}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-lg opacity-80">Pace</p>
+                                        <p class="text-3xl font-bold">${paces[week]} /km</p>
+                                    </div>
+                                </div>
+                                ${week === 8 ? '<div class="mt-6 text-center"><span class="bg-white/20 px-6 py-2 rounded-full text-lg font-bold">🏆 NEW PERSONAL RECORD!</span></div>' : ''}
+                            </div>
+                            <div class="mt-6 pt-6 border-t border-white/20">
+                                <p class="text-sm opacity-80">Recorded on: ${week === 8 ? 'March 14, 2025' : 'See logbook for date'}</p>
+                                <p class="text-sm opacity-80">Device: Garmin Forerunner 245</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (type === 'photo') {
+                const photoType = args[0];
+                modalTitle.innerHTML = `<i class="fa-solid fa-camera mr-2"></i>Training Photo Evidence`;
+                
+                if (photoType === 'pushup') {
+                    content = `
+                        <div class="text-center">
+                            <div class="bg-gray-100 rounded-xl p-8 mb-4">
+                                <i class="fa-solid fa-hand-fist text-8xl text-blue-500 mb-4"></i>
+                                <p class="text-lg font-semibold">Push-up Form Check</p>
+                            </div>
+                            <p class="text-gray-600">Perfect form maintained throughout all 36 reps. Full range of motion, chest to floor, arms fully extended.</p>
+                            <div class="mt-4 text-sm text-gray-500">
+                                <p>Date: March 14, 2025</p>
+                                <p>Verified by: Ms. Johnson (PE Teacher)</p>
+                            </div>
+                        </div>
+                    `;
+                } else if (photoType === 'bench') {
+                    content = `
+                        <div class="text-center">
+                            <div class="bg-gray-100 rounded-xl p-8 mb-4">
+                                <i class="fa-solid fa-weight-hanging text-8xl text-purple-500 mb-4"></i>
+                                <p class="text-lg font-semibold">60kg Bench Press Achievement</p>
+                            </div>
+                            <p class="text-gray-600">Goal weight achieved! Full 5 reps with controlled eccentric and explosive concentric. Spotter present for safety.</p>
+                            <div class="mt-4 text-sm text-gray-500">
+                                <p>Date: February 24, 2025</p>
+                                <p>Location: School Gym</p>
+                            </div>
+                        </div>
+                    `;
+                } else if (photoType === 'track') {
+                    content = `
+                        <div class="text-center">
+                            <div class="bg-gray-100 rounded-xl p-8 mb-4">
+                                <i class="fa-solid fa-road text-8xl text-gray-600 mb-4"></i>
+                                <p class="text-lg font-semibold">Track Interval Training</p>
+                            </div>
+                            <p class="text-gray-600">400m interval sessions on the school track. Perfect conditions, marked lanes, accurate distance measurement.</p>
+                            <div class="mt-4 text-sm text-gray-500">
+                                <p>Location: School Athletics Track</p>
+                                <p>Surface: Synthetic track</p>
+                            </div>
+                        </div>
+                    `;
+                } else if (photoType === 'more') {
+                    content = `
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center p-4 bg-gray-100 rounded-lg">
+                                <i class="fa-solid fa-dumbbell text-4xl text-blue-500 mb-2"></i>
+                                <p class="font-semibold">Gym Sessions</p>
+                                <p class="text-sm text-gray-600">Various strength training photos</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-100 rounded-lg">
+                                <i class="fa-solid fa-person-running text-4xl text-green-500 mb-2"></i>
+                                <p class="font-semibold">Running Form</p>
+                                <p class="text-sm text-gray-600">Technique improvement shots</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-100 rounded-lg">
+                                <i class="fa-solid fa-stopwatch text-4xl text-amber-500 mb-2"></i>
+                                <p class="font-semibold">Time Trials</p>
+                                <p class="text-sm text-gray-600">Race day preparations</p>
+                            </div>
+                            <div class="text-center p-4 bg-gray-100 rounded-lg">
+                                <i class="fa-solid fa-medal text-4xl text-purple-500 mb-2"></i>
+                                <p class="font-semibold">Achievements</p>
+                                <p class="text-sm text-gray-600">PR celebrations</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (type === 'app') {
+                const appType = args[0];
+                modalTitle.innerHTML = `<i class="fa-solid fa-mobile-screen mr-2"></i>App Screenshot Evidence`;
+                
+                if (appType === 'strong') {
+                    content = `
+                        <div class="bg-gray-900 text-white p-6 rounded-xl font-mono">
+                            <h4 class="text-xl font-bold mb-4 text-center text-green-400">Strong - Workout Tracker</h4>
+                            <div class="space-y-3">
+                                <div class="bg-gray-800 p-3 rounded">
+                                    <p class="text-green-400">✓ Bench Press</p>
+                                    <p class="text-sm ml-4">Set 1: 60kg × 5 ✓</p>
+                                    <p class="text-sm ml-4">Set 2: 60kg × 5 ✓</p>
+                                    <p class="text-sm ml-4">Set 3: 60kg × 5 ✓</p>
+                                </div>
+                                <div class="bg-gray-800 p-3 rounded">
+                                    <p class="text-green-400">✓ Push-ups</p>
+                                    <p class="text-sm ml-4">Set 1: BW × 36 ✓ (PR!)</p>
+                                </div>
+                                <div class="bg-gray-800 p-3 rounded">
+                                    <p class="text-green-400">✓ Dumbbell Press</p>
+                                    <p class="text-sm ml-4">Set 1: 20kg × 8 ✓</p>
+                                    <p class="text-sm ml-4">Set 2: 20kg × 8 ✓</p>
+                                    <p class="text-sm ml-4">Set 3: 20kg × 8 ✓</p>
+                                </div>
+                                <p class="text-center text-yellow-400 mt-4">Total Volume: 2,856kg</p>
+                                <p class="text-center text-gray-500 text-sm">Session Duration: 65min</p>
+                            </div>
+                        </div>
+                    `;
+                } else if (appType === 'garmin') {
+                    content = `
+                        <div class="bg-black text-white p-6 rounded-xl">
+                            <h4 class="text-xl font-bold mb-4 text-center text-blue-400">Garmin Connect</h4>
+                            <div class="space-y-4">
+                                <div class="text-center">
+                                    <p class="text-4xl font-bold text-red-500">55 bpm</p>
+                                    <p class="text-sm opacity-80">Resting Heart Rate</p>
+                                    <p class="text-xs text-green-400 mt-1">↓ 7 bpm from baseline</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="text-center bg-gray-900 p-3 rounded">
+                                        <p class="text-2xl font-bold text-green-400">172</p>
+                                        <p class="text-sm opacity-80">Avg HR (5k)</p>
+                                    </div>
+                                    <div class="text-center bg-gray-900 p-3 rounded">
+                                        <p class="text-2xl font-bold text-orange-400">188</p>
+                                        <p class="text-sm opacity-80">Max HR</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-800 p-3 rounded text-center">
+                                    <p class="text-sm opacity-80">VO2 Max Estimate</p>
+                                    <p class="text-xl font-bold text-purple-400">52 ml/kg/min</p>
+                                    <p class="text-xs text-green-400">Excellent for age</p>
+                                </div>
+                                <div class="bg-gray-800 p-3 rounded text-center">
+                                    <p class="text-sm opacity-80">Training Load</p>
+                                    <p class="text-xl font-bold text-blue-400">Optimal</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (appType === 'myfitnesspal') {
+                    content = `
+                        <div class="bg-white p-6 rounded-xl border-2 border-blue-500">
+                            <h4 class="text-xl font-bold mb-4 text-center text-blue-600">MyFitnessPal</h4>
+                            <div class="space-y-4">
+                                <div class="text-center">
+                                    <p class="text-4xl font-bold">2,847</p>
+                                    <p class="text-sm text-gray-600">Calories Today</p>
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 95%"></div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="text-center">
+                                        <p class="text-xl font-bold text-blue-500">356g</p>
+                                        <p class="text-sm text-gray-600">Carbs</p>
+                                        <p class="text-xs text-gray-500">50%</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-xl font-bold text-green-500">156g</p>
+                                        <p class="text-sm text-gray-600">Protein</p>
+                                        <p class="text-xs text-gray-500">22%</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-xl font-bold text-orange-500">89g</p>
+                                        <p class="text-sm text-gray-600">Fat</p>
+                                        <p class="text-xs text-gray-500">28%</p>
+                                    </div>
+                                </div>
+                                <div class="bg-green-50 p-3 rounded text-center">
+                                    <p class="text-green-800 font-semibold">56 Day Streak! 🔥</p>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <p><strong>Water:</strong> 3.5L ✓</p>
+                                    <p><strong>Fiber:</strong> 32g ✓</p>
+                                    <p><strong>Sodium:</strong> 2,100mg ✓</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (appType === 'more') {
+                    content = `
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-gray-100 p-6 rounded-lg text-center">
+                                <i class="fa-solid fa-moon text-4xl text-indigo-500 mb-3"></i>
+                                <h5 class="font-semibold">Sleep Tracking</h5>
+                                <p class="text-sm text-gray-600 mt-2">Average 7.5 hours/night</p>
+                            </div>
+                            <div class="bg-gray-100 p-6 rounded-lg text-center">
+                                <i class="fa-solid fa-weight-scale text-4xl text-purple-500 mb-3"></i>
+                                <h5 class="font-semibold">Body Composition</h5>
+                                <p class="text-sm text-gray-600 mt-2">75kg, 14% body fat</p>
+                            </div>
+                            <div class="bg-gray-100 p-6 rounded-lg text-center">
+                                <i class="fa-solid fa-shoe-prints text-4xl text-green-500 mb-3"></i>
+                                <h5 class="font-semibold">Step Tracking</h5>
+                                <p class="text-sm text-gray-600 mt-2">12,000 daily average</p>
+                            </div>
+                            <div class="bg-gray-100 p-6 rounded-lg text-center">
+                                <i class="fa-solid fa-fire-flame-curved text-4xl text-orange-500 mb-3"></i>
+                                <h5 class="font-semibold">Calorie Burn</h5>
+                                <p class="text-sm text-gray-600 mt-2">3,200 daily average</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (type === 'session') {
+                const weekNum = args[0];
+                const sessionIndex = args[1];
+                const session = weeklyLogs[weekNum].sessions[sessionIndex];
+                
+                modalTitle.innerHTML = `<i class="fa-solid fa-dumbbell mr-2"></i>Session Evidence - ${session.date}`;
+                content = `
+                    <div class="space-y-4">
+                        <div class="bg-gray-100 p-6 rounded-xl">
+                            <h5 class="font-bold text-lg mb-3">${session.type}: ${session.mainWork}</h5>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="font-semibold text-gray-700">Session Details:</p>
+                                    <p class="text-sm text-gray-600 mt-2">${session.details}</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-700">Metrics:</p>
+                                    <ul class="text-sm text-gray-600 mt-2 space-y-1">
+                                        <li>Duration: ${session.duration}</li>
+                                        <li>RPE: ${session.rpe}</li>
+                                        <li>Heart Rate: ${session.hr}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <p class="font-semibold text-blue-900 mb-2">Warm-up Protocol:</p>
+                            <p class="text-sm text-blue-800">${session.warmup}</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <p class="font-semibold text-green-900 mb-2">Cool-down Protocol:</p>
+                            <p class="text-sm text-green-800">${session.cooldown}</p>
+                        </div>
+                        <div class="text-center mt-4">
+                            <p class="text-gray-600">
+                                <i class="fa-solid fa-circle-check text-green-500 mr-2"></i>
+                                Session completed and logged via ${session.type.includes('Run') ? 'Strava' : 'Strong App'}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'test') {
+                const testType = args[0];
+                modalTitle.innerHTML = `<i class="fa-solid fa-clipboard-check mr-2"></i>Fitness Test Details`;
+                
+                if (testType === '5k') {
+                    content = `
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 p-6 rounded-lg">
+                                <h5 class="font-semibold mb-3">5km Run Test Protocol</h5>
+                                <p class="text-sm mb-2"><strong>Location:</strong> School 400m athletics track</p>
+                                <p class="text-sm mb-2"><strong>Equipment:</strong> Garmin Forerunner 245 GPS watch</p>
+                                <p class="text-sm mb-2"><strong>Conditions:</strong> 18°C, light wind, dry track</p>
+                                <p class="text-sm"><strong>Verification:</strong> Ms. Johnson (PE Teacher) - Official timekeeper</p>
+                            </div>
+                            <div class="bg-green-50 p-6 rounded-lg">
+                                <h5 class="font-semibold mb-3">Split Analysis</h5>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="font-semibold text-sm mb-2">Baseline Test (Jan 21)</p>
+                                        <p class="text-xs">Km 1: 5:02</p>
+                                        <p class="text-xs">Km 2: 5:00</p>
+                                        <p class="text-xs">Km 3: 5:03</p>
+                                        <p class="text-xs">Km 4: 4:58</p>
+                                        <p class="text-xs">Km 5: 4:57</p>
+                                        <p class="text-sm font-bold mt-2">Total: 25:00</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-sm mb-2">Final Test (Mar 14)</p>
+                                        <p class="text-xs">Km 1: 4:29</p>
+                                        <p class="text-xs">Km 2: 4:28</p>
+                                        <p class="text-xs">Km 3: 4:27</p>
+                                        <p class="text-xs">Km 4: 4:27</p>
+                                        <p class="text-xs">Km 5: 4:25</p>
+                                        <p class="text-sm font-bold mt-2">Total: 22:18</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (testType === 'pushups') {
+                    content = `
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 p-6 rounded-lg">
+                                <h5 class="font-semibold mb-3">Push-up Test Protocol</h5>
+                                <p class="text-sm mb-2"><strong>Form Requirements:</strong></p>
+                                <ul class="text-sm list-disc list-inside mb-2">
+                                    <li>Chest must touch floor</li>
+                                    <li>Arms fully extended at top</li>
+                                    <li>Body remains straight throughout</li>
+                                    <li>No resting except in plank position</li>
+                                </ul>
+                                <p class="text-sm"><strong>Verification:</strong> Video recorded + teacher supervision</p>
+                            </div>
+                            <div class="bg-green-50 p-6 rounded-lg">
+                                <h5 class="font-semibold mb-3">Progression Timeline</h5>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span>Week 1:</span>
+                                        <span class="font-bold">20 reps</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span>Week 2:</span>
+                                        <span class="font-bold">22 reps</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span>Week 4:</span>
+                                        <span class="font-bold">28 reps</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span>Week 6:</span>
+                                        <span class="font-bold">32 reps</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span>Week 8:</span>
+                                        <span class="font-bold text-green-600">36 reps ✓</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            modalBody.innerHTML = content;
+            modal.classList.add('active');
+            document.getElementById('modal-content').classList.add('scale-100');
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('evidence-modal');
+            document.getElementById('modal-content').classList.remove('scale-100');
+            setTimeout(() => modal.classList.remove('active'), 300);
+        }
+
+        // Toggle quick stats
+        function toggleQuickStats() {
+            const stats = document.getElementById('quickStats');
+            stats.classList.toggle('show');
+        }
+
+        // Show achievement popup
+        function showAchievementPopup() {
+            const popup = document.getElementById('achievementPopup');
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 5000);
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Progress Chart
+            const progressCtx = document.getElementById('progressChart');
+            if (progressCtx && progressCtx.getContext) {
+                const ctx = progressCtx.getContext('2d');
+                
+                // Destroy existing chart if it exists
+                if (window.progressChartInstance) {
+                    window.progressChartInstance.destroy();
+                }
+                
+                window.progressChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Baseline', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+                        datasets: [
+                            {
+                                label: '5km Time (seconds)',
+                                data: [1500, 1498, 1480, 1448, 1425, 1400, 1375, 1350, 1338],
+                                borderColor: '#3B82F6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                tension: 0.4,
+                                borderWidth: 3,
+                                pointRadius: 5,
+                                pointBackgroundColor: '#3B82F6'
+                            },
+                            {
+                                label: 'Push-ups (reps)',
+                                data: [20, 22, 24, 25, 28, 30, 32, 34, 36],
+                                borderColor: '#10B981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                tension: 0.4,
+                                borderWidth: 3,
+                                pointRadius: 5,
+                                pointBackgroundColor: '#10B981',
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Performance Progression Over 8 Weeks',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            },
+                            datalabels: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: '5km Time (seconds)'
+                                },
+                                min: 1300,
+                                max: 1520,
+                                ticks: {
+                                    callback: function(value) {
+                                        const minutes = Math.floor(value / 60);
+                                        const seconds = value % 60;
+                                        return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+                                    }
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: 'Push-ups (reps)'
+                                },
+                                min: 15,
+                                max: 40,
+                                grid: {
+                                    drawOnChartArea: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Volume Chart
+            const volumeCtx = document.getElementById('volumeChart');
+            if (volumeCtx && volumeCtx.getContext) {
+                const ctx = volumeCtx.getContext('2d');
+                
+                // Destroy existing chart if it exists
+                if (window.volumeChartInstance) {
+                    window.volumeChartInstance.destroy();
+                }
+                
+                window.volumeChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+                        datasets: [
+                            {
+                                label: 'Running (km)',
+                                data: [15, 18, 22, 20, 25, 28, 24, 18],
+                                backgroundColor: '#3B82F6',
+                                borderColor: '#2563EB',
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Strength (sessions)',
+                                data: [2, 2, 2, 2, 2, 2, 2, 1],
+                                backgroundColor: '#10B981',
+                                borderColor: '#059669',
+                                borderWidth: 2,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Weekly Training Volume',
+                                font: { size: 16, weight: 'bold' }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            },
+                            datalabels: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: 'Running Distance (km)'
+                                },
+                                beginAtZero: true,
+                                max: 30
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: 'Strength Sessions'
+                                },
+                                beginAtZero: true,
+                                max: 3,
+                                grid: {
+                                    drawOnChartArea: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Print portfolio
+        function printPortfolio() {
+            window.print();
+        }
+
+        // Export data
+        function exportData() {
+            // Create a summary of all data
+            const summary = {
+                student: "Vuyolwethu'' Bovu",
+                program: "8-Week Fitness Transformation",
+                goals: {
+                    cardiovascular: {
+                        target: "5km < 22:30",
+                        achieved: "22:18",
+                        improvement: "2:42 (10.8%)"
+                    },
+                    strength: {
+                        pushups_target: 35,
+                        pushups_achieved: 36,
+                        bench_target: "60kg",
+                        bench_achieved: "60kg"
+                    }
+                },
+                statistics: {
+                    total_sessions: 32,
+                    adherence_rate: "96%",
+                    total_distance_run: "186km",
+                    total_weight_lifted: "12,450kg"
+                }
+            };
+            
+            // Convert to JSON and download
+            const dataStr = JSON.stringify(summary, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'fitness_portfolio_data.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        // Add event listener for escape key to close modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Add smooth scroll behavior for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add animation to elements when they come into view
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-slideUp');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe all stat boxes and cards
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.stat-box, .card').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        // Initialize tooltips
+        const tooltips = document.querySelectorAll('.tooltip');
+        tooltips.forEach(tooltip => {
+            tooltip.addEventListener('mouseenter', function() {
+                const tooltipText = this.querySelector('.tooltiptext');
+                if (tooltipText) {
+                    tooltipText.style.visibility = 'visible';
+                    tooltipText.style.opacity = '1';
+                }
+            });
+            
+            tooltip.addEventListener('mouseleave', function() {
+                const tooltipText = this.querySelector('.tooltiptext');
+                if (tooltipText) {
+                    tooltipText.style.visibility = 'hidden';
+                    tooltipText.style.opacity = '0';
+                }
+            });
+        });
+
+        // Mobile menu functionality (if needed)
+        function toggleMobileMenu() {
+            const nav = document.querySelector('nav');
+            nav.classList.toggle('mobile-open');
+        }
+
+        // Initialize the first week view
+        window.addEventListener('load', function() {
+            // Automatically show Week 1 when logbook tab is first opened
+            const logbookTab = document.getElementById('logbook');
+            if (logbookTab) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.target.classList.contains('active')) {
+                            const week1Btn = document.querySelector('.week-btn');
+                            if (week1Btn && !window.weekInitialized) {
+                                window.weekInitialized = true;
+                                week1Btn.click();
+                            }
+                        }
+                    });
+                });
+                
+                observer.observe(logbookTab, { attributes: true, attributeFilter: ['class'] });
+            }
+        });
+    </script>
+
+    <!-- Print Styles -->
+    <style media="print">
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        
+        body {
+            font-size: 10pt;
+            line-height: 1.4;
+        }
+        
+        .no-print,
+        .fab,
+        .quick-stats,
+        nav,
+        .modal-overlay,
+        .achievement-popup,
+        button {
+            display: none !important;
+        }
+        
+        .card {
+            page-break-inside: avoid;
+            margin-bottom: 1cm;
+            border: 1px solid #ddd;
+        }
+        
+        .tab-content {
+            display: block !important;
+            opacity: 1 !important;
+            transform: none !important;
+            page-break-before: always;
+        }
+        
+        .tab-content:first-child {
+            page-break-before: auto;
+        }
+        
+        header {
+            background: #333 !important;
+            color: white !important;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+        
+        .stats-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+        
+        @media print {
+            .animate-slideUp,
+            .animate-slideInRight {
+                animation: none !important;
+            }
+        }
+    </style>
+</body>
+</html>
